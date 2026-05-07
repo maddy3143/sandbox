@@ -1,0 +1,142 @@
+name: ar_object_scanner
+description: AI-powered AR application that scans real-world objects and generates intelligent interactive digital twins.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # AR & Camera
+  ar_flutter_plugin: ^0.7.3
+  camera: ^0.10.5
+  image_picker: ^1.0.4
+
+  # 3D Rendering
+  flutter_gl: ^0.0.6
+  three_dart: ^0.0.14
+  model_viewer_plus: ^1.7.0
+  o3d: ^1.2.0
+
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+
+  # Navigation
+  go_router: ^13.0.1
+
+  # AI / ML
+  tflite_flutter: ^0.10.4
+  google_mlkit_object_detection: ^0.12.0
+  google_mlkit_image_labeling: ^0.12.0
+  google_mlkit_pose_detection: ^0.12.0
+
+  # Networking
+  dio: ^5.4.0
+  retrofit: ^4.1.0
+
+  # UI Components
+  flutter_animate: ^4.5.0
+  glassmorphism: ^3.0.0
+  animated_text_kit: ^4.2.2
+  lottie: ^3.0.0
+  shimmer: ^3.0.0
+  fl_chart: ^0.67.0
+  syncfusion_flutter_gauges: ^25.1.35
+  percent_indicator: ^4.2.3
+
+  # Voice & Speech
+  speech_to_text: ^6.6.0
+  flutter_tts: ^3.8.5
+
+  # Storage & Database
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+  sqflite: ^2.3.0
+  shared_preferences: ^2.2.2
+
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+  firebase_analytics: ^10.8.0
+
+  # Real-time Communication
+  socket_io_client: ^2.0.3+1
+
+  # Media & Files
+  path_provider: ^2.1.2
+  file_picker: ^6.1.1
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1
+  video_player: ^2.8.2
+
+  # Sensors & Device
+  sensors_plus: ^4.0.2
+  vibration: ^1.8.4
+  torch_light: ^1.1.0
+  battery_plus: ^5.0.3
+
+  # Maps & Location
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.3
+
+  # Payments
+  in_app_purchase: ^3.1.11
+
+  # Utils
+  uuid: ^4.3.3
+  intl: ^0.19.0
+  permission_handler: ^11.3.0
+  connectivity_plus: ^5.0.2
+  device_info_plus: ^10.1.0
+  package_info_plus: ^5.0.1
+  url_launcher: ^6.2.4
+  share_plus: ^7.2.2
+  qr_code_scanner: ^1.0.1
+  barcode_scan2: ^4.2.4
+  image: ^4.1.3
+  vector_math: ^2.1.4
+  collection: ^1.18.0
+  equatable: ^2.0.5
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  logger: ^2.0.2+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  riverpod_generator: ^2.3.9
+  freezed: ^2.4.6
+  json_serializable: ^6.7.1
+  retrofit_generator: ^8.1.0
+  hive_generator: ^2.0.1
+  mockito: ^5.4.4
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/models_3d/
+    - assets/sounds/
+    - assets/animations/
+    - assets/lottie/
+  fonts:
+    - family: Rajdhani
+      fonts:
+        - asset: assets/fonts/Rajdhani-Regular.ttf
+        - asset: assets/fonts/Rajdhani-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Rajdhani-SemiBold.ttf
+          weight: 600
+    - family: Orbitron
+      fonts:
+        - asset: assets/fonts/Orbitron-Regular.ttf
+        - asset: assets/fonts/Orbitron-Bold.ttf
+          weight: 700
