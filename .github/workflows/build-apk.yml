@@ -1,0 +1,65 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - claude/ar-object-scanner-3UXyJ
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.5"
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Get dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Analyze code
+        working-directory: flutter_app
+        run: flutter analyze --no-fatal-infos || true
+
+      - name: Build APK (debug — no signing needed)
+        working-directory: flutter_app
+        run: flutter build apk --debug --no-tree-shake-icons
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AR-Object-Scanner-debug.apk
+          path: flutter_app/build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
+
+      - name: Build APK (release)
+        working-directory: flutter_app
+        run: flutter build apk --release --no-tree-shake-icons --split-per-abi
+        continue-on-error: true
+
+      - name: Upload release APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: AR-Object-Scanner-release-apks
+          path: flutter_app/build/app/outputs/flutter-apk/app-*-release.apk
+          retention-days: 30
+        continue-on-error: true

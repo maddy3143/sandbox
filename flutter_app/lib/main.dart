@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -25,7 +24,6 @@ void main() async {
     ),
   );
 
-  await Firebase.initializeApp();
   await Hive.initFlutter();
   await ServiceLocator.init();
 
