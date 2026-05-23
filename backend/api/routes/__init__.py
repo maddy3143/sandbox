@@ -7,6 +7,8 @@ from .marketplace import router as marketplace_router
 from .collaboration import router as collaboration_router
 from .gamification import router as gamification_router
 from .simulation import router as simulation_router
+from .calls import router as calls_router
+from .calendar_integration import router as calendar_router
 
 __all__ = [
     "scan_router",
@@ -18,4 +20,6 @@ __all__ = [
     "collaboration_router",
     "gamification_router",
     "simulation_router",
+    "calls_router",
+    "calendar_router",
 ]

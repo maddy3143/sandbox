@@ -59,6 +59,15 @@ dependencies:
   # Location
   geolocator: ^11.0.0
 
+  # Call Assistant
+  firebase_messaging: ^15.1.3       # FCM push notifications for incoming calls
+  flutter_local_notifications: ^17.2.2  # Show call notification banners
+  url_launcher: ^6.3.0              # Open OAuth URLs for calendar auth
+  flutter_webview_plugin: ^0.4.0    # In-app OAuth flow (calendar auth)
+  add_2_calendar: ^3.0.0            # Device calendar integration
+  just_audio: ^0.9.38               # Play call notification sound
+  wakelock_plus: ^1.2.8             # Keep screen on during active call
+
   # Utils
   uuid: ^4.3.3
   intl: ^0.19.0

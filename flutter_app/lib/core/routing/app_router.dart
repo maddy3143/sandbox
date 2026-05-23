@@ -13,6 +13,9 @@ import '../../features/diagnostics/screens/diagnostics_screen.dart';
 import '../../features/marketplace/screens/marketplace_screen.dart';
 import '../../features/collaboration/screens/collaboration_screen.dart';
 import '../../features/gamification/screens/gamification_screen.dart';
+import '../../features/calls/screens/call_history_screen.dart';
+import '../../features/calls/screens/call_detail_screen.dart';
+import '../../features/calls/screens/incoming_call_screen.dart';
 import '../../shared/widgets/main_shell.dart';
 import '../constants/route_names.dart';
 
@@ -131,6 +134,43 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: RouteNames.gamification,
             pageBuilder: (context, state) =>
                 _buildPage(state, const GamificationScreen()),
+          ),
+          GoRoute(
+            path: RouteNames.callHistory,
+            name: RouteNames.callHistory,
+            pageBuilder: (context, state) =>
+                _buildPage(state, const CallHistoryScreen()),
+          ),
+          // NOTE: incomingCall (/calls/incoming) must be declared before
+          // callDetail (/calls/:callId) so go_router does not treat
+          // the literal "incoming" segment as a callId parameter.
+          GoRoute(
+            path: RouteNames.incomingCall,
+            name: RouteNames.incomingCall,
+            pageBuilder: (context, state) {
+              final callId =
+                  state.uri.queryParameters['callId'] ?? '';
+              final fromNumber =
+                  state.uri.queryParameters['fromNumber'] ?? '';
+              final callerName =
+                  state.uri.queryParameters['callerName'];
+              return _buildPage(
+                state,
+                IncomingCallScreen(
+                  callId: callId,
+                  fromNumber: fromNumber,
+                  callerName: callerName,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: RouteNames.callDetail,
+            name: RouteNames.callDetail,
+            pageBuilder: (context, state) {
+              final callId = state.pathParameters['callId'] ?? '';
+              return _buildPage(state, CallDetailScreen(callId: callId));
+            },
           ),
         ],
       ),

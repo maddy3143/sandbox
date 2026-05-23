@@ -62,6 +62,46 @@ class Settings(BaseSettings):
     DAMAGE_MODEL_PATH: str = "models/damage_detector.pt"
     DEPTH_MODEL_PATH: str = "models/depth_estimator.pt"
 
+    # ── Call Assistant ────────────────────────────────────────────────────────
+    # Twilio
+    TWILIO_ACCOUNT_SID: str = os.getenv("TWILIO_ACCOUNT_SID", "")
+    TWILIO_AUTH_TOKEN: str = os.getenv("TWILIO_AUTH_TOKEN", "")
+    TWILIO_PHONE_NUMBER: str = os.getenv("TWILIO_PHONE_NUMBER", "")
+
+    # Google Cloud (Speech + TTS)
+    GOOGLE_APPLICATION_CREDENTIALS: str = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "")
+    GOOGLE_STT_CREDENTIALS_PATH: str = os.getenv("GOOGLE_STT_CREDENTIALS_PATH", "")
+    GOOGLE_TTS_CREDENTIALS_PATH: str = os.getenv("GOOGLE_TTS_CREDENTIALS_PATH", "")
+
+    # FCM / Firebase Cloud Messaging
+    FCM_CREDENTIALS_PATH: str = os.getenv("FCM_CREDENTIALS_PATH", "")
+
+    # Call encryption (AES-256, must be exactly 32 bytes when base64-decoded)
+    CALL_ENCRYPTION_KEY: str = os.getenv("CALL_ENCRYPTION_KEY", "")
+
+    # Google Calendar OAuth
+    GOOGLE_CALENDAR_CLIENT_ID: str = os.getenv("GOOGLE_CALENDAR_CLIENT_ID", "")
+    GOOGLE_CALENDAR_CLIENT_SECRET: str = os.getenv("GOOGLE_CALENDAR_CLIENT_SECRET", "")
+    GOOGLE_CALENDAR_REDIRECT_URI: str = os.getenv(
+        "GOOGLE_CALENDAR_REDIRECT_URI", "http://localhost:8000/v1/calendar/auth/google/callback"
+    )
+
+    # Microsoft Graph / Outlook Calendar OAuth
+    OUTLOOK_CLIENT_ID: str = os.getenv("OUTLOOK_CLIENT_ID", "")
+    OUTLOOK_CLIENT_SECRET: str = os.getenv("OUTLOOK_CLIENT_SECRET", "")
+    OUTLOOK_TENANT_ID: str = os.getenv("OUTLOOK_TENANT_ID", "common")
+    OUTLOOK_REDIRECT_URI: str = os.getenv(
+        "OUTLOOK_REDIRECT_URI", "http://localhost:8000/v1/calendar/auth/outlook/callback"
+    )
+
+    # Call assistant settings
+    CALL_DECISION_TIMEOUT_SECONDS: int = int(os.getenv("CALL_DECISION_TIMEOUT_SECONDS", "30"))
+    CALL_MAX_DURATION_SECONDS: int = int(os.getenv("CALL_MAX_DURATION_SECONDS", "600"))
+    CALL_RECORDINGS_S3_PREFIX: str = "calls"
+
+    # Dev mode (bypasses auth and uses mock AI responses)
+    DEV_MODE: bool = os.getenv("DEV_MODE", "false").lower() == "true"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
