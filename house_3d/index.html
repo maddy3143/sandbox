@@ -721,7 +721,7 @@ function buildExt(){
   // Ground/lawn
   box(80,.2,90,M.grass, cx,-.1,tl/2,extG);
   // Compound front wall
-  box(56,.1,60,.3,M.cpndWall, cx,1.5,-14,extG);
+  box(56,3,.3,M.cpndWall, cx,1.5,-14,extG);
   // Gate pillars
   cyl(.75,.75,5.5,M.pillar, cx-3.5,2.75,-14,extG);
   cyl(.75,.75,5.5,M.pillar, cx+3.5,2.75,-14,extG);
@@ -762,7 +762,7 @@ function buildExt(){
   addTree(-8,50); addTree(cx+12,50);
 
   // GF cornice band (horizontal)
-  box(tw+.1,.35,wt=D.wt,M.ggTrim, cx,D.gfH+D.slabT+.17,.35,extG);
+  box(tw+.1,.35,D.wt,M.ggTrim, cx,D.gfH+D.slabT+.17,.35,extG);
   box(tw+.1,.35,D.wt,M.ggTrim, cx,D.gfH+D.slabT+.17,tl-.35,extG);
   box(D.wt,.35,tl+.1,M.ggTrim, .35,D.gfH+D.slabT+.17,tl/2,extG);
   box(D.wt,.35,tl+.1,M.ggTrim, tw-.35,D.gfH+D.slabT+.17,tl/2,extG);
@@ -796,12 +796,169 @@ function buildFrontElevation(){
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// DINING AREA (GF, between kitchen & hall ~ z=14..20)
+// ─────────────────────────────────────────────────────────────────────────────
+function buildDining(grp,yBase=0){
+  const cx=D.cx+1, cz=D.staEndZ+4; // dining zone centre
+  // Table (6-seater, galaxy granite top)
+  box(5.5,.12,3,M.ggTrim, cx,yBase+2.65,cz,grp);
+  box(5.5,.08,3,M.wood,   cx,yBase+2.5, cz,grp);
+  // Table legs
+  [[-2.3,-1.2],[2.3,-1.2],[-2.3,1.2],[2.3,1.2]].forEach(([dx,dz])=>{
+    cyl(.06,.06,2.5,M.metal,cx+dx,yBase+1.25,cz+dz,grp,8);
+  });
+  // Chairs (6)
+  const chairPos=[[-3.6,0],[-1.2,-2.2],[1.2,-2.2],[-1.2,2.2],[1.2,2.2],[3.6,0]];
+  chairPos.forEach(([dx,dz])=>{
+    const facing = dz<-1 ? 0 : dz>1 ? Math.PI : dx<0 ? Math.PI/2 : -Math.PI/2;
+    box(1.6,1.4,1.6,M.wood,cx+dx,yBase+.7,cz+dz,grp);
+    box(1.6,1.8,.18,M.wood,cx+dx,yBase+1.8,cz+dz+(dz<-1?-.9:dz>1?.9:dx<0?-.9:.9),grp);
+  });
+  // Pendant light above table
+  cyl(.04,.04,1.8,M.metal,cx,yBase+D.gfH-.9,cz,grp,8);
+  cyl(.35,.25,.3,M.gold,  cx,yBase+D.gfH-2,cz,grp,16);
+  const dl=new THREE.PointLight(0xffe8cc,3,8);
+  dl.position.set(cx,yBase+D.gfH-2.2,cz); grp.add(dl); iLights.push(dl);
+  // Decorative bowl on table
+  cyl(.4,.5,.25,M.ggTrim,cx,yBase+2.78,cz,grp,16);
+  sph(.3,M.red,cx,yBase+2.9,cz,grp);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HANGING CEILING LIGHTS
+// ─────────────────────────────────────────────────────────────────────────────
+function addPendant(x,y,z,grp=gfG){
+  cyl(.03,.03,1.2,M.metal,x,y-.6,z,grp,8);
+  cyl(.4,.3,.35,M.gold,x,y-1.35,z,grp,16);
+  const pl=new THREE.PointLight(0xfff5cc,2.5,10);
+  pl.position.set(x,y-1.6,z); grp.add(pl); iLights.push(pl);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CURTAINS (thin fabric panels on interior side of windows)
+// ─────────────────────────────────────────────────────────────────────────────
+// inDir: +1 = interior is in +x direction (left wall), -1 = interior is in -x direction (right wall)
+function addCurtain(grp,cx,cy,cz,w,h,axis,col=0xf5e6d3,inDir=1){
+  const mat=new THREE.MeshStandardMaterial({color:col,roughness:.9,side:THREE.DoubleSide,transparent:true,opacity:.85});
+  const off=.22*inDir;
+  if(axis==='x'){
+    box(w/2-.1,h,.08,mat,cx-w/4,cy,cz+Math.abs(off),grp);
+    box(w/2-.1,h,.08,mat,cx+w/4,cy,cz+Math.abs(off),grp);
+    box(w+.4,.06,.06,M.gold,cx,cy+h/2+.08,cz+Math.abs(off),grp);
+  } else {
+    box(.08,h,w/2-.1,mat,cx+off,cy,cz-w/4,grp);
+    box(.08,h,w/2-.1,mat,cx+off,cy,cz+w/4,grp);
+    box(.06,.06,w+.4,M.gold,cx+off,cy+h/2+.08,cz,grp);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POTTED PLANTS (indoor)
+// ─────────────────────────────────────────────────────────────────────────────
+function addPlant(x,y,z,grp=gfG,scale=1){
+  cyl(.18*scale,.22*scale,.4*scale,M.ggTrim,x,y+.2*scale,z,grp,10); // pot
+  cyl(.08*scale,.1*scale,.3*scale,M.green,x,y+.55*scale,z,grp,8);   // stem
+  sph(.35*scale,M.treeLeaf,x,y+.9*scale,z,grp);
+  sph(.22*scale,M.treeLeaf,x+.2*scale,y+.8*scale,z-.1*scale,grp);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CAR (driveway)
+// ─────────────────────────────────────────────────────────────────────────────
+function addCar(x,z,grp=extG){
+  const carMat=new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.6});
+  const glassMat=new THREE.MeshStandardMaterial({color:0x88aacc,transparent:true,opacity:.5,roughness:.05});
+  const tyreMat=new THREE.MeshStandardMaterial({color:0x111111,roughness:.9});
+  // Body
+  box(7.5,1.5,3.2,carMat,x,.75,z,grp);
+  // Cabin/roof
+  box(4.5,1.2,3,carMat,x-.2,1.95,z,grp);
+  // Windscreens
+  box(4.5,.04,3,glassMat,x-.2,1.95,z,grp);
+  // Side windows
+  box(.06,1,2.8,glassMat,x+1.8,1.95,z,grp);
+  box(.06,1,2.8,glassMat,x-2.2,1.95,z,grp);
+  // Wheels (dx=fore-aft offset, dz=side offset)
+  [[-2.8,-1.65],[-2.8,1.65],[2.8,-1.65],[2.8,1.65]].forEach(([dx,dz])=>{
+    cyl(.55,.55,.35,M.metal,x+dx,.55,z+dz,grp,16);
+    cyl(.38,.38,.38,tyreMat, x+dx,.55,z+dz,grp,16);
+  });
+  // Headlights
+  const hlMat=new THREE.MeshStandardMaterial({color:0xffffdd,emissive:0xffff88,emissiveIntensity:.6});
+  box(.08,.3,.5,hlMat,x+3.78,.9,z-1.1,grp);
+  box(.08,.3,.5,hlMat,x+3.78,.9,z+1.1,grp);
+  // Rear lights
+  const rlMat=new THREE.MeshStandardMaterial({color:0xff2222,emissive:0xff0000,emissiveIntensity:.4});
+  box(.08,.25,.45,rlMat,x-3.78,.9,z-1.1,grp);
+  box(.08,.25,.45,rlMat,x-3.78,.9,z+1.1,grp);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TERRACE FEATURES (on FF slab)
+// ─────────────────────────────────────────────────────────────────────────────
+function buildTerrace(){
+  const base=GFT+D.ffH+D.slabT;
+  const cx=D.cx, tl=D.tl, tw=D.tw, wt=D.wt;
+  const terrMat=new THREE.MeshStandardMaterial({color:0xc8c0b8,roughness:.5});
+  // Terrace floor (polished concrete)
+  box(tw-2*wt,.08,tl-2*wt,terrMat, cx,base+.04,tl/2,ffG);
+  // Terrace chairs (seating zone at back)
+  [[4,tl-10],[4,tl-14],[tw-4,tl-10],[tw-4,tl-14]].forEach(([x,z])=>{
+    box(1.5,1.2,1.5,M.red, x,base+.6,z,ffG);
+    box(1.5,1.8,.2,M.red,  x,base+1.5,z+.85,ffG);
+  });
+  // Small terrace table
+  box(2.5,.12,2.5,M.ggTrim, cx,base+1.6,tl-12,ffG);
+  cyl(.06,.06,1.6,M.metal,  cx,base+.8, tl-12,ffG,8);
+  // Garden pots on parapet corners
+  [[2,wt+.4],[tw-2,wt+.4],[2,tl-wt-.4],[tw-2,tl-wt-.4]].forEach(([x,z])=>{
+    cyl(.3,.35,.4,M.ggTrim, x,base+D.para+.2,z,ffG,12);
+    sph(.35,M.treeLeaf,     x,base+D.para+.65,z,ffG);
+  });
+  // Clothesline poles + wire
+  cyl(.06,.06,3,M.metal, 3,      base+D.para+1.5,tl-5,ffG,8);
+  cyl(.06,.06,3,M.metal, tw-3,   base+D.para+1.5,tl-5,ffG,8);
+  box(.04,.04,tw-6,M.metal, cx,  base+D.para+3,  tl-5,ffG);
+  // Solar panels (decorative slabs angled on roof)
+  box(4,.06,3,new THREE.MeshStandardMaterial({color:0x1a2a4a,metalness:.4,roughness:.2}),
+      cx,base+D.para+.3,tl-8,ffG,0.25,0,0);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // ASSEMBLE
 // ─────────────────────────────────────────────────────────────────────────────
 buildGF();
 buildFF();
 buildExt();
 buildFrontElevation();
+
+// --- Extra details added after base build ---
+
+// Dining table (GF hall zone)
+buildDining(furnG);
+
+// Pendant lights – hall (GF & FF)
+addPendant(D.cx,D.gfH,22,gfG);
+addPendant(D.cx-3,D.gfH,17,gfG);
+addPendant(D.cx+3,D.gfH,17,gfG);
+addPendant(D.cx,GFT+D.ffH,22,ffG);
+
+// Curtains – GF side windows (left wall inDir=+1, right wall inDir=-1)
+addCurtain(gfG, D.wt/2,      4.8, 22, 2.5, 3.5,'z',0xf5e6d3, 1);
+addCurtain(gfG, D.wt/2,      4.8, 36, 2.5, 3.5,'z',0xe8d5c0, 1);
+addCurtain(gfG, D.tw-D.wt/2, 4.8, 22, 2.5, 3.5,'z',0xf0ddc8,-1);
+addCurtain(gfG, D.tw-D.wt/2, 4.8, 36, 2.5, 3.5,'z',0xf5e6d3,-1);
+
+// Indoor plants – corners of hall & bedroom
+addPlant(D.wt+.6, 0, D.staEndZ+.8, furnG, 1.1);
+addPlant(D.tw-D.wt-.8, 0, D.staEndZ+.8, furnG, 1.0);
+addPlant(D.wt+.6, 0, D.hallEndZ-.8, furnG, 1.2);
+
+// Car in driveway
+addCar(D.cx+13, 8, extG);
+
+// Terrace furniture & features
+buildTerrace();
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VIEW PRESETS
