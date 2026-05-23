@@ -51,6 +51,18 @@ celery[redis]==5.4.0  # async task queue
 flower==2.0.1         # Celery monitoring
 prometheus-fastapi-instrumentator==7.0.0
 
+# ── Call Assistant ────────────────────────────────────────────────────────────
+twilio==9.2.3                        # Telephony — calls + TwiML
+google-cloud-speech==2.26.0          # Multilingual STT streaming
+google-cloud-texttospeech==2.16.3    # Neural TTS synthesis
+firebase-admin==6.5.0                # FCM push notifications
+google-auth==2.29.0                  # Google OAuth2
+google-auth-oauthlib==1.2.0          # OAuth flow helpers
+google-api-python-client==2.131.0    # Google Calendar API
+msal==1.28.0                         # Microsoft OAuth (Outlook Calendar)
+cryptography==42.0.8                 # AES-256-GCM call encryption
+langdetect==1.0.9                    # Language detection from text
+
 # Testing
 pytest==8.2.2
 pytest-asyncio==0.23.7

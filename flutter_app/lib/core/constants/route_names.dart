@@ -12,4 +12,9 @@ class RouteNames {
   static const collaboration = '/collaboration';
   static const gamification = '/gamification';
   static const settings = '/settings';
+
+  // Calls feature
+  static const callHistory = '/calls';
+  static const callDetail = '/calls/:callId';
+  static const incomingCall = '/calls/incoming';
 }

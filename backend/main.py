@@ -16,6 +16,8 @@ from api.routes import (
     collaboration_router,
     gamification_router,
     simulation_router,
+    calls_router,
+    calendar_router,
 )
 from config.settings import settings
 from services.database.db import init_db
@@ -64,6 +66,8 @@ app.include_router(marketplace_router, prefix="/v1/marketplace", tags=["Marketpl
 app.include_router(collaboration_router, prefix="/v1/collaboration", tags=["Collaboration"])
 app.include_router(gamification_router, prefix="/v1/gamification", tags=["Gamification"])
 app.include_router(simulation_router, prefix="/v1/simulation", tags=["Simulation"])
+app.include_router(calls_router, prefix="/v1/calls", tags=["Call Assistant"])
+app.include_router(calendar_router, prefix="/v1/calendar", tags=["Calendar Integration"])
 
 
 @app.get("/health")
