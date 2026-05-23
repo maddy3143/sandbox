@@ -3,42 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D House Model – 2-Floor Residence</title>
+<title>Modern Indian Residence – 3D Model 2026</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   body{overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;background:#87CEEB;touch-action:none;}
   canvas{display:block;}
-
-  /* ── Panel ── */
-  #ui{position:fixed;top:10px;left:10px;z-index:10;width:195px;}
-  #panel{background:rgba(10,12,28,.9);backdrop-filter:blur(14px);color:#fff;border-radius:12px;border:1px solid rgba(255,255,255,.15);overflow:hidden;}
+  #ui{position:fixed;top:10px;left:10px;z-index:10;width:200px;}
+  #panel{background:rgba(10,12,28,.92);backdrop-filter:blur(14px);color:#fff;border-radius:12px;border:1px solid rgba(255,255,255,.15);overflow:hidden;}
   #panel-head{display:flex;align-items:center;justify-content:space-between;padding:11px 13px 8px;cursor:pointer;user-select:none;}
   #panel-head h2{font-size:13px;font-weight:700;color:#FFD700;letter-spacing:.8px;margin:0;}
   #panel-head p{font-size:9px;color:#aaa;margin:1px 0 0;}
   #toggle-arrow{font-size:16px;color:#FFD700;transition:transform .25s;line-height:1;}
-  #panel-body{padding:0 13px 12px;transition:max-height .3s ease,opacity .3s ease;max-height:600px;opacity:1;overflow:hidden;}
+  #panel-body{padding:0 13px 12px;transition:max-height .35s ease,opacity .3s ease;max-height:700px;opacity:1;overflow:hidden;}
   #panel-body.collapsed{max-height:0;opacity:0;padding-bottom:0;}
-  .sec{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px;}
+  .sec{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px;}
   .btn{display:block;width:100%;margin:3px 0;padding:8px 10px;background:rgba(255,255,255,.08);color:#ddd;border:1px solid rgba(255,255,255,.18);border-radius:7px;cursor:pointer;font-size:11px;text-align:left;transition:.18s;}
-  .btn:active,.btn:hover{background:rgba(255,215,0,.2);border-color:#FFD700;color:#FFD700;}
+  .btn:hover,.btn:active{background:rgba(255,215,0,.2);border-color:#FFD700;color:#FFD700;}
   .btn.on{background:rgba(255,215,0,.22);border-color:#FFD700;color:#FFD700;}
-
-  /* ── Bottom hint ── */
   #hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:rgba(255,255,255,.8);padding:6px 16px;border-radius:20px;font-size:11px;pointer-events:none;white-space:nowrap;}
-
-  /* ── Legend ── */
-  #legend{position:fixed;bottom:14px;right:10px;background:rgba(10,12,28,.82);color:#ccc;border-radius:8px;padding:8px 12px;font-size:10px;border:1px solid rgba(255,255,255,.12);}
-  #legend b{color:#FFD700;display:block;margin-bottom:3px;font-size:10px;}
-  #legend span{display:block;margin:2px 0;}
-  .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle;}
-
-  /* ── Mobile overrides ── */
   @media(max-width:480px){
     #ui{width:calc(100vw - 20px);top:8px;left:8px;}
-    #panel-head h2{font-size:14px;}
     .btn{padding:10px 12px;font-size:12px;margin:4px 0;}
     #hint{font-size:10px;padding:5px 12px;bottom:10px;}
-    #legend{display:none;}        /* hide legend on small screen */
   }
 </style>
 </head>
@@ -47,1137 +33,1111 @@
 <div id="ui">
   <div id="panel">
     <div id="panel-head" onclick="togglePanel()">
-      <div>
-        <h2>🏠 2-FLOOR RESIDENCE</h2>
-        <p>15'6" × 44' · GF + FF &nbsp;·&nbsp; tap to collapse</p>
-      </div>
+      <div><h2>HOUSE 3D</h2><p>15'6" × 44' · 2-Floor Residence</p></div>
       <span id="toggle-arrow">▲</span>
     </div>
-    <div id="panel-body">
-      <div class="sec">View Preset</div>
-      <button class="btn on" onclick="setView('ext')">🌅 Exterior</button>
-      <button class="btn"    onclick="setView('elev')">🏛️ Front Elevation</button>
-      <button class="btn"    onclick="setView('gf')">🛋️ GF Interior</button>
-      <button class="btn"    onclick="setView('ff')">🛏️ FF Interior</button>
-      <button class="btn"    onclick="setView('cut')">✂️ Cutaway</button>
-      <button class="btn"    onclick="setView('top')">📐 Floor Plan</button>
-
+    <div id="panel-body" id="panel-body">
+      <div class="sec">Views</div>
+      <button class="btn" onclick="gotoView('ext')">🏠 Exterior</button>
+      <button class="btn" onclick="gotoView('elev')">📐 Front Elevation</button>
+      <button class="btn" onclick="gotoView('gf')">🛋 Ground Floor</button>
+      <button class="btn" onclick="gotoView('ff')">🛏 First Floor</button>
+      <button class="btn" onclick="gotoView('cut')">✂ Section Cut</button>
+      <button class="btn" onclick="gotoView('top')">🗺 Top View</button>
       <div class="sec">Floors</div>
-      <button class="btn on" onclick="showFloors('both')">Both Floors</button>
-      <button class="btn"    onclick="showFloors('gf')">Ground Floor</button>
-      <button class="btn"    onclick="showFloors('ff')">First Floor</button>
-
-      <div class="sec">Toggles</div>
-      <button class="btn on" id="btnFurn"  onclick="toggle('furn')">Furniture</button>
-      <button class="btn on" id="btnLight" onclick="toggle('light')">Interior Lights</button>
-      <button class="btn on" id="btnExt"   onclick="toggle('ext_el')">Exterior</button>
-      <button class="btn on" id="btnDay"   onclick="toggleDayNight()">☀️ Day Mode</button>
-      <button class="btn"    onclick="setView('ext')">↺ Reset Camera</button>
+      <button class="btn on" id="btn-gf" onclick="toggleGroup('gf')">Ground Floor</button>
+      <button class="btn on" id="btn-ff" onclick="toggleGroup('ff')">First Floor</button>
+      <button class="btn on" id="btn-ext" onclick="toggleGroup('ext')">Exterior / Site</button>
+      <div class="sec">Options</div>
+      <button class="btn on" id="btn-furn" onclick="toggleFurn()">Furniture</button>
+      <button class="btn on" id="btn-lights" onclick="toggleLights()">Interior Lights</button>
+      <button class="btn" id="btn-night" onclick="toggleNight()">Day / Night</button>
+      <button class="btn" onclick="resetCamera()">↺ Reset Camera</button>
     </div>
   </div>
 </div>
+<div id="hint">Drag to orbit · Scroll to zoom · Right-drag to pan</div>
 
-<div id="hint" id="hintBar">
-  <span id="hint-desk">🖱 Left-drag: Rotate &nbsp;|&nbsp; Right-drag: Pan &nbsp;|&nbsp; Scroll: Zoom</span>
-  <span id="hint-mob" style="display:none">👆 1-finger: Rotate &nbsp;|&nbsp; 2-finger: Pan &nbsp;|&nbsp; Pinch: Zoom</span>
-</div>
-
-<div id="legend">
-  <b>Materials</b>
-  <span><span class="dot" style="background:#1a1a3e"></span>Galaxy Granite</span>
-  <span><span class="dot" style="background:#8B4513"></span>Teak Wood</span>
-  <span><span class="dot" style="background:#e8dfd0"></span>Lapotea Stone</span>
-  <span><span class="dot" style="background:#e0efff"></span>Ceramic Tile</span>
-  <span><span class="dot" style="background:#f0ead6"></span>Plaster Wall</span>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
-// RENDERER + SCENE
-// ─────────────────────────────────────────────────────────────────────────────
-const renderer = new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
-document.body.appendChild(renderer.domElement);
+/* ============================================================
+   MODERN INDIAN RESIDENCE – Three.js r128
+   15'6" wide × 44' long  |  2-Floor
+   1 unit = 1 foot
+   ============================================================ */
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87CEEB);
-scene.fog = new THREE.FogExp2(0x87CEEB,.007);
+scene.fog = new THREE.Fog(0x87CEEB, 120, 300);
 
-// Sky dome (gradient sphere – always present, coloured by day/night)
-const skyDomeGeo = new THREE.SphereGeometry(280,32,16);
-const skyDomeMat = new THREE.MeshBasicMaterial({color:0x87CEEB,side:THREE.BackSide});
-scene.add(new THREE.Mesh(skyDomeGeo,skyDomeMat));
+const W = window.innerWidth, H = window.innerHeight;
+const camera = new THREE.PerspectiveCamera(45, W/H, 0.1, 600);
+camera.position.set(38, 26, 50);
 
-// Stars (only visible at night)
-const starGeo = new THREE.BufferGeometry();
-const starVerts=[];
-for(let i=0;i<3000;i++){
-  const r=230+Math.random()*40;
-  const th=Math.random()*Math.PI, ph=Math.random()*Math.PI*2;
-  starVerts.push(r*Math.sin(th)*Math.cos(ph), r*Math.cos(th), r*Math.sin(th)*Math.sin(ph));
-}
-starGeo.setAttribute('position',new THREE.Float32BufferAttribute(starVerts,3));
-const starField = new THREE.Points(starGeo,new THREE.PointsMaterial({color:0xffffff,size:1.0,transparent:true,opacity:0}));
-scene.add(starField);
-
-// Moon
-const moonMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(5,16,12),
-  new THREE.MeshBasicMaterial({color:0xEEE8D0})
-);
-moonMesh.position.set(-80,120,-150);
-moonMesh.visible=false;
-scene.add(moonMesh);
-
-const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, .1, 600);
-camera.position.set(38,26,50);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(W, H);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding;
+document.body.appendChild(renderer.domElement);
 
 const controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.target.set(7.75,7,22);
+controls.target.set(7.75,8,22);
 controls.enableDamping = true;
-controls.dampingFactor = .06;
-controls.maxPolarAngle = Math.PI*.88;
+controls.dampingFactor = 0.08;
+controls.minDistance = 3; controls.maxDistance = 200;
 controls.update();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LIGHTING
-// ─────────────────────────────────────────────────────────────────────────────
-const ambLight = new THREE.AmbientLight(0xfff5e0,.45);
-scene.add(ambLight);
-
-const sun = new THREE.DirectionalLight(0xfff5e0,1.6);
-sun.position.set(25,35,20);
-sun.castShadow = true;
-sun.shadow.mapSize.setScalar(2048);
-Object.assign(sun.shadow.camera,{left:-35,right:35,top:35,bottom:-35,near:.5,far:120});
-scene.add(sun);
-
-const hemiLight = new THREE.HemisphereLight(0x87CEEB,0x8B7355,.55);
-scene.add(hemiLight);
-
-// Moon directional (active at night)
-const moonLight = new THREE.DirectionalLight(0x8899cc,.0);
-moonLight.position.set(-25,30,-20);
-scene.add(moonLight);
-
-let isDay=true;
-function toggleDayNight(){
-  isDay=!isDay;
-  const btn=document.getElementById('btnDay');
-  if(isDay){
-    // Day
-    scene.background.set(0x87CEEB);
-    scene.fog.color.set(0x87CEEB);
-    skyDomeMat.color.set(0x87CEEB);
-    ambLight.color.set(0xfff5e0); ambLight.intensity=.45;
-    sun.intensity=1.6; sun.color.set(0xfff5e0);
-    hemiLight.color.set(0x87CEEB); hemiLight.intensity=.55;
-    moonLight.intensity=0;
-    starField.material.opacity=0;
-    moonMesh.visible=false;
-    renderer.toneMappingExposure=1.1;
-    btn.textContent='☀️ Day Mode'; btn.classList.add('on');
-  } else {
-    // Night
-    scene.background.set(0x0a0a1a);
-    scene.fog.color.set(0x0a0a1a);
-    skyDomeMat.color.set(0x0a0a1a);
-    ambLight.color.set(0x223355); ambLight.intensity=.18;
-    sun.intensity=0;
-    hemiLight.color.set(0x112244); hemiLight.intensity=.12;
-    moonLight.intensity=.7;
-    starField.material.opacity=.9;
-    moonMesh.visible=true;
-    renderer.toneMappingExposure=.6;
-    btn.textContent='🌙 Night Mode'; btn.classList.remove('on');
-  }
+/* ────── CANVAS TEXTURE HELPERS ────── */
+function makeCanvasTex(w, h, fn) {
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  fn(cv.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(cv);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
 }
 
-const iLights=[];
-function iLight(x,y,z,c=0xfff8dc,i=2.2,r=14){
-  const l=new THREE.PointLight(c,i,r);
-  l.position.set(x,y,z); scene.add(l); iLights.push(l); return l;
-}
-// GF
-iLight(7.75,9.5, 4);   // entry/stair
-iLight(7.75,9.5,14);   // kitchen
-iLight(7.75,9.5,22);   // hall
-iLight(7.75,9.5,36);   // bedroom
-iLight(13.2,9.5,39);   // toilet
-// FF
-iLight(7.75,21.8,10);
-iLight(7.75,21.8,22);
-iLight(7.75,21.8,36);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PROCEDURAL TEXTURES
-// ─────────────────────────────────────────────────────────────────────────────
-function mkCanvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
-
-function galaxyGraniteTex(){
-  const c=mkCanvas(512,512),x=c.getContext('2d');
-  x.fillStyle='#14142a'; x.fillRect(0,0,512,512);
-  for(let i=0;i<4000;i++){
-    const px=Math.random()*512,py=Math.random()*512,r=Math.random()*2.5+.3;
-    x.beginPath();x.arc(px,py,r,0,6.28);
-    const g=Math.random();
-    x.fillStyle=g>.7?`rgba(220,220,240,${Math.random()*.7+.2})`:
-                 g>.4?`rgba(160,160,200,${Math.random()*.5+.1})`:
-                      `rgba(80,80,140,${Math.random()*.4+.1})`;
-    x.fill();
-  }
-  // veins
-  for(let i=0;i<8;i++){
-    x.beginPath();
-    x.moveTo(Math.random()*512,Math.random()*512);
-    for(let j=0;j<6;j++) x.lineTo(Math.random()*512,Math.random()*512);
-    x.strokeStyle=`rgba(200,200,230,${Math.random()*.12+.04})`;
-    x.lineWidth=Math.random()*1.5+.3; x.stroke();
-  }
-  const t=new THREE.CanvasTexture(c);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(2,2); return t;
+function galaxyGraniteTex() {
+  return makeCanvasTex(512,512,(ctx,w,h)=>{
+    ctx.fillStyle='#0f0f1e'; ctx.fillRect(0,0,w,h);
+    // subtle blue veins
+    for(let i=0;i<6;i++){
+      ctx.beginPath();
+      ctx.moveTo(Math.random()*w, Math.random()*h);
+      ctx.bezierCurveTo(Math.random()*w,Math.random()*h,Math.random()*w,Math.random()*h,Math.random()*w,Math.random()*h);
+      ctx.strokeStyle=`rgba(80,100,160,${0.06+Math.random()*0.08})`;
+      ctx.lineWidth=1.5+Math.random()*2;
+      ctx.stroke();
+    }
+    // speckles
+    for(let i=0;i<2200;i++){
+      const x=Math.random()*w, y=Math.random()*h, r=Math.random()*1.2+0.2;
+      const g=200+Math.floor(Math.random()*55);
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${g},${g},${g+20},${0.5+Math.random()*0.5})`; ctx.fill();
+    }
+    // gold flakes
+    for(let i=0;i<120;i++){
+      const x=Math.random()*w, y=Math.random()*h;
+      ctx.beginPath(); ctx.arc(x,y,0.8,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,180,80,${0.4+Math.random()*0.4})`; ctx.fill();
+    }
+  });
 }
 
-function woodTex(base='#6B3010',grain='#3d1a05'){
-  const c=mkCanvas(512,512),x=c.getContext('2d');
-  x.fillStyle=base; x.fillRect(0,0,512,512);
-  for(let i=0;i<60;i++){
-    const y=Math.random()*512, w=Math.random()*5+1;
-    x.beginPath(); x.moveTo(0,y);
-    let px=0;
-    while(px<512){px+=4+Math.random()*12;x.lineTo(px,y+(Math.random()-.5)*4);}
-    x.strokeStyle=grain; x.globalAlpha=Math.random()*.25+.1;
-    x.lineWidth=w; x.stroke();
-  }
-  x.globalAlpha=1;
-  const t=new THREE.CanvasTexture(c);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(2,4); return t;
+function lightGraniteTex() {
+  return makeCanvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle='#d0cec8'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<600;i++){
+      const x=Math.random()*w, y=Math.random()*h;
+      const g=160+Math.floor(Math.random()*40);
+      ctx.beginPath(); ctx.arc(x,y,0.8+Math.random()*1.2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${g},${g-10},${g-15},0.4)`; ctx.fill();
+    }
+  });
 }
 
-function tileTex(c1='#eeeeee',c2='#d8d8d8',sz=48){
-  const c=mkCanvas(512,512),x=c.getContext('2d');
-  const n=512/sz;
-  for(let r=0;r<n;r++) for(let cl=0;cl<n;cl++){
-    x.fillStyle=(r+cl)%2===0?c1:c2;
-    x.fillRect(cl*sz+1,r*sz+1,sz-2,sz-2);
-  }
-  const t=new THREE.CanvasTexture(c);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(3,3); return t;
+function teakWoodTex() {
+  return makeCanvasTex(256,512,(ctx,w,h)=>{
+    ctx.fillStyle='#7a3a10'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<h;i+=3){
+      const v=Math.random()*6-3;
+      ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i+v);
+      ctx.strokeStyle=`rgba(${50+Math.floor(Math.random()*30)},${20+Math.floor(Math.random()*20)},0,0.18)`;
+      ctx.lineWidth=1; ctx.stroke();
+    }
+  });
 }
 
-function lapoteaTex(){
-  const c=mkCanvas(512,512),x=c.getContext('2d');
-  x.fillStyle='#d4c9b0'; x.fillRect(0,0,512,512);
-  for(let i=0;i<1500;i++){
-    x.fillStyle=`rgba(${100+Math.random()*60},${90+Math.random()*50},${60+Math.random()*40},${Math.random()*.3})`;
-    x.fillRect(Math.random()*512,Math.random()*512,Math.random()*4+1,Math.random()*4+1);
-  }
-  const t=new THREE.CanvasTexture(c);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(3,3); return t;
+function whiteTileTex() {
+  return makeCanvasTex(320,320,(ctx,w,h)=>{
+    ctx.fillStyle='#fafafa'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='#d0d0d0'; ctx.lineWidth=1;
+    for(let x=0;x<=w;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for(let y=0;y<=h;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  });
 }
 
-function plasterTex(){
-  const c=mkCanvas(256,256),x=c.getContext('2d');
-  x.fillStyle='#f0ead6'; x.fillRect(0,0,256,256);
-  for(let i=0;i<2000;i++){
-    x.fillStyle=`rgba(${Math.floor(Math.random()*30)},${Math.floor(Math.random()*25)},${Math.floor(Math.random()*15)},${Math.random()*.12})`;
-    x.fillRect(Math.random()*256,Math.random()*256,2,2);
-  }
-  const t=new THREE.CanvasTexture(c);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(4,4); return t;
+function mosaicTileTex() {
+  return makeCanvasTex(240,240,(ctx,w,h)=>{
+    ctx.fillStyle='#252525'; ctx.fillRect(0,0,w,h);
+    for(let x=0;x<w;x+=20){
+      for(let y=0;y<h;y+=20){
+        const g=45+Math.floor(Math.random()*25);
+        ctx.fillStyle=`rgb(${g},${g},${g})`;
+        ctx.fillRect(x+1,y+1,18,18);
+      }
+    }
+  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MATERIALS
-// ─────────────────────────────────────────────────────────────────────────────
-const T={
-  gg:   galaxyGraniteTex(),
-  wood: woodTex(),
-  dkwood: woodTex('#3d1a05','#1a0800'),
-  tile: tileTex(),
-  bathtile: tileTex('#ddeeff','#b8cce0',40),
-  lap:  lapoteaTex(),
-  plaster: plasterTex(),
+function wallPlasterTex() {
+  return makeCanvasTex(256,256,(ctx,w,h)=>{
+    ctx.fillStyle='#f2ede0'; ctx.fillRect(0,0,w,h);
+    for(let i=0;i<300;i++){
+      const x=Math.random()*w, y=Math.random()*h;
+      ctx.fillStyle=`rgba(180,160,130,${Math.random()*0.06})`;
+      ctx.fillRect(x,y,Math.random()*3,Math.random()*3);
+    }
+  });
+}
+
+function metroTileTex() {
+  return makeCanvasTex(320,160,(ctx,w,h)=>{
+    ctx.fillStyle='#f8f8f8'; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='#bbb'; ctx.lineWidth=1;
+    for(let row=0;row*40<h;row++){
+      const off=(row%2===0)?0:40;
+      for(let col=-1;col*80<w;col++){
+        ctx.strokeRect(col*80+off+1, row*40+1, 78, 38);
+      }
+    }
+  });
+}
+
+/* ────── MATERIALS ────── */
+function mat(color, opts={}) {
+  return new THREE.MeshStandardMaterial({color, ...opts});
+}
+function tmat(tex, opts={}) {
+  return new THREE.MeshStandardMaterial({map:tex, ...opts});
+}
+
+const ggTex = galaxyGraniteTex();
+const ggTex2 = galaxyGraniteTex();
+const lgTex = lightGraniteTex();
+const twTex = teakWoodTex();
+const wtTex = whiteTileTex();
+const msTex = mosaicTileTex();
+const wpTex = wallPlasterTex();
+const mtTex = metroTileTex();
+
+[ggTex,ggTex2].forEach(t=>{t.repeat.set(3,3);});
+lgTex.repeat.set(2,2);
+twTex.repeat.set(2,4);
+wtTex.repeat.set(4,4);
+msTex.repeat.set(4,4);
+wpTex.repeat.set(6,6);
+mtTex.repeat.set(4,2);
+
+const M = {
+  ggFloor:  tmat(ggTex,  {roughness:0.15, metalness:0.3}),
+  ggTrim:   tmat(ggTex2, {roughness:0.2, metalness:0.25}),
+  ggCounter:tmat(ggTex,  {roughness:0.2, metalness:0.2}),
+  ltCounter:tmat(lgTex,  {roughness:0.3, metalness:0.05}),
+  wood:     tmat(twTex,  {roughness:0.7}),
+  dkWood:   mat(0x4a2008,{roughness:0.75}),
+  whiteTile:tmat(wtTex,  {roughness:0.25, metalness:0.05}),
+  mosaicTile:tmat(msTex, {roughness:0.4}),
+  metroTile:tmat(mtTex,  {roughness:0.3, metalness:0.05}),
+  extWall:  tmat(wpTex,  {color:0xfff0d8, roughness:0.85}),
+  intWall:  mat(0xfaf4eb,{roughness:0.9}),
+  accentTeal: mat(0x1a4a5a,{roughness:0.88}),
+  accentGrey: mat(0x5a5a6a,{roughness:0.88}),
+  accentGreen:mat(0x1a3a2a,{roughness:0.88}),
+  accentTerra:mat(0x8a4a35,{roughness:0.88}),
+  glass:    mat(0xaaccee,{transparent:true,opacity:0.28,roughness:0.05,metalness:0.1}),
+  frostGlass:mat(0xccddee,{transparent:true,opacity:0.45,roughness:0.25}),
+  winFrame: mat(0x8a9aaa,{roughness:0.3,metalness:0.7}),
+  metal:    mat(0xcccccc,{roughness:0.2,metalness:0.9}),
+  gold:     mat(0xd4af37,{roughness:0.3,metalness:0.8}),
+  white:    mat(0xffffff,{roughness:0.8}),
+  offWhite: mat(0xf5f0e8,{roughness:0.85}),
+  blue:     mat(0x2255aa,{roughness:0.8}),
+  dkGrey:   mat(0x2a2a3a,{roughness:0.82}),
+  mustard:  mat(0xd4930a,{roughness:0.85}),
+  terracotta:mat(0xcc6644,{roughness:0.85}),
+  burgundy: mat(0x6a1a2a,{roughness:0.82}),
+  slab:     mat(0xb0b0b0,{roughness:0.9}),
+  ceil:     mat(0xf5f5f0,{roughness:0.95}),
+  grass:    mat(0x3a7a35,{roughness:1.0}),
+  path:     tmat(ggTex2, {roughness:0.6, metalness:0.1, color:0xaaaaaa}),
+  pillar:   mat(0xfff0d8,{roughness:0.8}),
+  cpndWall: mat(0xe8dfd0,{roughness:0.9}),
+  amber:    mat(0xffcc44,{emissive:0xffcc44,emissiveIntensity:0.6,roughness:0.8}),
+  ledStrip: mat(0xffeedd,{emissive:0xffeedd,emissiveIntensity:0.8,roughness:1}),
+  skyDay:   mat(0x87CEEB,{side:THREE.BackSide}),
+  skyNight: mat(0x05050f,{side:THREE.BackSide}),
+  chrome:   mat(0xdddddd,{roughness:0.05,metalness:1.0}),
+  teal:     mat(0x1a4a5a,{roughness:0.8}),
 };
 
-const M={
-  extWall: new THREE.MeshStandardMaterial({map:T.plaster,color:0xede5d0,roughness:.85}),
-  intWall: new THREE.MeshStandardMaterial({color:0xfaf4e8,roughness:.9}),
-  ggFloor: new THREE.MeshStandardMaterial({map:T.gg,color:0x1e1e38,roughness:.15,metalness:.45}),
-  ggTrim:  new THREE.MeshStandardMaterial({map:T.gg,color:0x14142a,roughness:.08,metalness:.6}),
-  ggCounter:new THREE.MeshStandardMaterial({map:T.gg,color:0x1a1a30,roughness:.06,metalness:.55}),
-  wood:    new THREE.MeshStandardMaterial({map:T.wood,color:0x7a3a12,roughness:.6,metalness:.05}),
-  dkWood:  new THREE.MeshStandardMaterial({map:T.dkwood,color:0x3d1a05,roughness:.55,metalness:.08}),
-  lap:     new THREE.MeshStandardMaterial({map:T.lap,color:0xc8bda5,roughness:.4,metalness:.05}),
-  tile:    new THREE.MeshStandardMaterial({map:T.tile,color:0xeef4ff,roughness:.25,metalness:.1}),
-  bathTile:new THREE.MeshStandardMaterial({map:T.bathtile,color:0xe0eeff,roughness:.2,metalness:.12}),
-  slab:    new THREE.MeshStandardMaterial({color:0xd0c8bc,roughness:.9}),
-  ceil:    new THREE.MeshStandardMaterial({color:0xfaf8f5,roughness:.95}),
-  glass:   new THREE.MeshStandardMaterial({color:0xadd8e6,transparent:true,opacity:.28,roughness:.02,metalness:.12}),
-  winFrame:new THREE.MeshStandardMaterial({color:0xffffff,roughness:.3,metalness:.2}),
-  metal:   new THREE.MeshStandardMaterial({color:0xa0a8b0,roughness:.2,metalness:.9}),
-  gold:    new THREE.MeshStandardMaterial({color:0xd4af37,roughness:.1,metalness:.95}),
-  white:   new THREE.MeshStandardMaterial({color:0xfefefe,roughness:.35,metalness:.05}),
-  blue:    new THREE.MeshStandardMaterial({color:0x3a6ea5,roughness:.6}),
-  red:     new THREE.MeshStandardMaterial({color:0x9b2335,roughness:.6}),
-  green:   new THREE.MeshStandardMaterial({color:0x2d6a2d,roughness:.9}),
-  treeLeaf:new THREE.MeshStandardMaterial({color:0x228B22,roughness:.95}),
-  pillar:  new THREE.MeshStandardMaterial({color:0xe8dfd0,roughness:.5}),
-  grass:   new THREE.MeshStandardMaterial({color:0x3a7d2a,roughness:1}),
-  path:    new THREE.MeshStandardMaterial({map:T.gg,color:0x303845,roughness:.35,metalness:.2}),
-  poojaWall:new THREE.MeshStandardMaterial({color:0xffe4b5,roughness:.8}),
-  cpndWall:new THREE.MeshStandardMaterial({color:0xddd5c0,roughness:.8}),
-  stair:   new THREE.MeshStandardMaterial({map:T.lap,color:0xbcb09a,roughness:.35,metalness:.05}),
-  stairRiser:new THREE.MeshStandardMaterial({map:T.tile,color:0xe0eeff,roughness:.25,metalness:.08}),
-};
+/* ────── SCENE GROUPS ────── */
+const gfG   = new THREE.Group(); scene.add(gfG);
+const ffG   = new THREE.Group(); scene.add(ffG);
+const furnG = new THREE.Group(); scene.add(furnG);
+const extG  = new THREE.Group(); scene.add(extG);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GROUPS
-// ─────────────────────────────────────────────────────────────────────────────
-const gfG=new THREE.Group(), ffG=new THREE.Group();
-const furnG=new THREE.Group(), extG=new THREE.Group();
-scene.add(gfG,ffG,furnG,extG);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-function box(w,h,d,mat,x,y,z,grp=gfG,rx=0,ry=0,rz=0){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-  m.position.set(x,y,z); m.rotation.set(rx,ry,rz);
-  m.castShadow=true; m.receiveShadow=true; grp.add(m); return m;
+/* ────── GEOMETRY HELPERS ────── */
+function box(w,h,d,m,x,y,z,grp,rx=0,ry=0,rz=0){
+  const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);
+  mesh.position.set(x,y,z);
+  mesh.rotation.set(rx,ry,rz);
+  mesh.castShadow=true; mesh.receiveShadow=true;
+  if(grp) grp.add(mesh); else scene.add(mesh);
+  return mesh;
 }
-function cyl(rt,rb,h,mat,x,y,z,grp=gfG,seg=16){
-  const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),mat);
-  m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; grp.add(m); return m;
+function cyl(rt,rb,h,m,x,y,z,grp,seg=16){
+  const mesh=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),m);
+  mesh.position.set(x,y,z);
+  mesh.castShadow=true; mesh.receiveShadow=true;
+  if(grp) grp.add(mesh); else scene.add(mesh);
+  return mesh;
 }
-function sph(r,mat,x,y,z,grp=extG){
-  const m=new THREE.Mesh(new THREE.SphereGeometry(r,12,8),mat);
-  m.position.set(x,y,z); m.castShadow=true; grp.add(m); return m;
+function sph(r,m,x,y,z,grp){
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),m);
+  mesh.position.set(x,y,z);
+  mesh.castShadow=true;
+  if(grp) grp.add(mesh); else scene.add(mesh);
+  return mesh;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DIMENSIONS  (1 unit = 1 foot)
-// ─────────────────────────────────────────────────────────────────────────────
-const D={
-  tw:15.5, tl:44, wt:.75,  // total width/length, wall thickness
-  iw:13.75,                 // inner width (13'9")
-  gfH:10.75,                // GF slab height 10'9"
-  ffH:7.83,                 // FF wall height 7'10"
-  slabT:.5,
-  para:1.5,                 // parapet
-  cx:7.75,                  // centre x
-  // room z-positions (from front face z=0)
-  staEndZ:14,   // staircase / kitchen zone end
-  hallEndZ:30,  // hall end / bedroom start
-};
-const GFT = D.gfH+D.slabT;  // top of GF slab = base of FF floor
+/* ────── DIMENSIONS ────── */
+const totalW=15.5, totalL=44, wallT=0.75, innerW=13.75;
+const gfH=10.75, ffH=7.83, slabT=0.5, parH=1.5;
+const gfTop=gfH, ffTop=gfH+slabT+ffH;
+const riserH=0.583, treadD=0.75;
+const hallZ=14, hallEndZ=30;
+const toiletX=10.75, bathW=totalW-toiletX-wallT;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DOOR & WINDOW HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-function addWindow(grp,cx,cy,cz,ww,wh,axis){
-  // axis: 'x'=wall faces Z, 'z'=wall faces X
-  if(axis==='x'){
-    box(ww,wh,.08,M.glass,cx,cy,cz,grp);
-    box(ww+.2,.1,.12,M.winFrame,cx,cy+wh/2,cz,grp);
-    box(ww+.2,.1,.12,M.winFrame,cx,cy-wh/2,cz,grp);
-    box(.1,wh+.2,.12,M.winFrame,cx-ww/2,cy,cz,grp);
-    box(.1,wh+.2,.12,M.winFrame,cx+ww/2,cy,cz,grp);
-    box((ww-.1)/2,.05,.08,M.winFrame,cx,cy,cz,grp); // centre bar
-  } else {
-    box(.08,wh,ww,M.glass,cx,cy,cz,grp);
-    box(.12,.1,ww+.2,M.winFrame,cx,cy+wh/2,cz,grp);
-    box(.12,.1,ww+.2,M.winFrame,cx,cy-wh/2,cz,grp);
-    box(.12,wh+.2,.1,M.winFrame,cx,cy,cz-ww/2,grp);
-    box(.12,wh+.2,.1,M.winFrame,cx,cy,cz+ww/2,grp);
-    box(.08,.05,ww,M.winFrame,cx,cy,cz,grp);
+/* ════════════════════════════════════════════════
+   GROUND FLOOR SHELL
+   ════════════════════════════════════════════════ */
+function buildGFShell() {
+  const g=gfG;
+  // FLOOR – galaxy granite
+  const floorTex=galaxyGraniteTex(); floorTex.repeat.set(6,10);
+  box(totalW,0.1,totalL, M.ggFloor, totalW/2,0,totalL/2, g);
+
+  // WALLS exterior face cream plaster
+  // Front wall (z=0)
+  box(totalW,gfH,wallT, M.extWall, totalW/2,gfH/2,wallT/2, g);
+  // Back wall (z=44)
+  box(totalW,gfH,wallT, M.extWall, totalW/2,gfH/2,totalL-wallT/2, g);
+  // Left wall
+  box(wallT,gfH,totalL, M.extWall, wallT/2,gfH/2,totalL/2, g);
+  // Right wall
+  box(wallT,gfH,totalL, M.extWall, totalW-wallT/2,gfH/2,totalL/2, g);
+
+  // INTERIOR partition walls – interior face
+  // Hall/kitchen partition (z=14)
+  box(totalW,gfH,wallT, M.intWall, totalW/2,gfH/2,hallZ+wallT/2, g);
+  // Hall/bedroom partition (z=30)
+  box(totalW,gfH,wallT, M.intWall, totalW/2,gfH/2,hallEndZ+wallT/2, g);
+  // Bathroom partition (x=10.75, z=30..44)
+  box(wallT,gfH,totalL-hallEndZ, M.intWall, toiletX+wallT/2,gfH/2,hallEndZ+(totalL-hallEndZ)/2, g);
+
+  // Stair partition wall (x=3.75, z=0..14)
+  box(wallT,gfH,hallZ, M.intWall, 3.75+wallT/2,gfH/2,hallZ/2, g);
+
+  // BASE granite band 1ft
+  box(totalW,1,wallT+0.05, M.ggTrim, totalW/2,0.5,0, g);
+  box(totalW,1,wallT+0.05, M.ggTrim, totalW/2,0.5,totalL, g);
+  box(wallT+0.05,1,totalL, M.ggTrim, 0,0.5,totalL/2, g);
+  box(wallT+0.05,1,totalL, M.ggTrim, totalW,0.5,totalL/2, g);
+
+  // GF CORNICE at gfH – galaxy granite band
+  box(totalW+0.1,0.3,wallT+0.06, M.ggTrim, totalW/2,gfH-0.15,0, g);
+  box(totalW+0.1,0.3,wallT+0.06, M.ggTrim, totalW/2,gfH-0.15,totalL, g);
+  box(wallT+0.06,0.3,totalL+0.1, M.ggTrim, 0,gfH-0.15,totalL/2, g);
+  box(wallT+0.06,0.3,totalL+0.1, M.ggTrim, totalW,gfH-0.15,totalL/2, g);
+
+  // CEILING
+  box(totalW,slabT,totalL, M.slab, totalW/2,gfH+slabT/2,totalL/2, g);
+
+  // INTERIOR WALLS (inside faces visible cream)
+  // Ceiling plaster
+  box(innerW,0.05,totalL-wallT*2, M.ceil, totalW/2,gfH-0.01,(totalL)/2, g);
+}
+
+/* ════════════════════════════════════════════════
+   FIRST FLOOR SHELL
+   ════════════════════════════════════════════════ */
+function buildFFShell() {
+  const g=ffG;
+  const ffBase=gfH+slabT;
+  // Exterior walls
+  box(totalW,ffH,wallT, M.extWall, totalW/2,ffBase+ffH/2,wallT/2, g);
+  box(totalW,ffH,wallT, M.extWall, totalW/2,ffBase+ffH/2,totalL-wallT/2, g);
+  box(wallT,ffH,totalL, M.extWall, wallT/2,ffBase+ffH/2,totalL/2, g);
+  box(wallT,ffH,totalL, M.extWall, totalW-wallT/2,ffBase+ffH/2,totalL/2, g);
+  // Interior partitions
+  box(totalW,ffH,wallT, M.intWall, totalW/2,ffBase+ffH/2,hallZ+wallT/2, g);
+  box(totalW,ffH,wallT, M.intWall, totalW/2,ffBase+ffH/2,hallEndZ+wallT/2, g);
+  box(wallT,ffH,totalL-hallEndZ, M.intWall, toiletX+wallT/2,ffBase+ffH/2,hallEndZ+(totalL-hallEndZ)/2, g);
+
+  // FF base granite band
+  box(totalW,0.6,wallT+0.05, M.ggTrim, totalW/2,ffBase+0.3,0, g);
+  box(totalW,0.6,wallT+0.05, M.ggTrim, totalW/2,ffBase+0.3,totalL, g);
+  box(wallT+0.05,0.6,totalL, M.ggTrim, 0,ffBase+0.3,totalL/2, g);
+  box(wallT+0.05,0.6,totalL, M.ggTrim, totalW,ffBase+0.3,totalL/2, g);
+
+  // FF cornice
+  box(totalW+0.1,0.3,wallT+0.06, M.ggTrim, totalW/2,ffTop-0.15,0, g);
+  box(totalW+0.1,0.3,wallT+0.06, M.ggTrim, totalW/2,ffTop-0.15,totalL, g);
+  box(wallT+0.06,0.3,totalL+0.1, M.ggTrim, 0,ffTop-0.15,totalL/2, g);
+  box(wallT+0.06,0.3,totalL+0.1, M.ggTrim, totalW,ffTop-0.15,totalL/2, g);
+
+  // Flat roof slab
+  box(totalW+0.1,slabT,totalL+0.1, M.slab, totalW/2,ffTop+slabT/2,totalL/2, g);
+  // Parapet
+  box(totalW+0.1,parH,wallT, M.extWall, totalW/2,ffTop+slabT+parH/2,0, g);
+  box(totalW+0.1,parH,wallT, M.extWall, totalW/2,ffTop+slabT+parH/2,totalL, g);
+  box(wallT,parH,totalL+0.1, M.extWall, 0,ffTop+slabT+parH/2,totalL/2, g);
+  box(wallT,parH,totalL+0.1, M.extWall, totalW,ffTop+slabT+parH/2,totalL/2, g);
+
+  // Water tank (behind parapet, top right)
+  box(5,3,4, M.slab, totalW-3,ffTop+slabT+parH+1.5,totalL-2.5, g);
+  box(5.1,0.15,4.1, M.ggTrim, totalW-3,ffTop+slabT+parH+3.1,totalL-2.5, g); // lid
+
+  // FF floor galaxy granite
+  const ffFloorTex=galaxyGraniteTex(); ffFloorTex.repeat.set(6,10);
+  box(totalW,0.05,totalL, M.ggFloor, totalW/2,ffBase+0.03,totalL/2, g);
+  box(totalW,0.05,totalL, M.ceil, totalW/2,ffTop-0.03,totalL/2, g);
+}
+
+/* ════════════════════════════════════════════════
+   CORNER PILLARS
+   ════════════════════════════════════════════════ */
+function buildPillars() {
+  const positions=[[0,0],[totalW,0],[0,totalL],[totalW,totalL]];
+  positions.forEach(([px,pz])=>{
+    cyl(0.5,0.5,gfH,M.pillar, px,gfH/2,pz, gfG);
+    // granite cap
+    cyl(0.6,0.6,0.3,M.ggTrim, px,gfH,pz, gfG);
+    cyl(0.5,0.5,ffH,M.pillar, px,gfH+slabT+ffH/2,pz, ffG);
+    cyl(0.6,0.6,0.3,M.ggTrim, px,ffTop,pz, ffG);
+  });
+}
+
+/* ════════════════════════════════════════════════
+   WINDOWS & DOORS
+   ════════════════════════════════════════════════ */
+function buildOpenings() {
+  // GF FRONT (z=0) – 2 large windows + main door
+  // Main door (centre)
+  box(4,8,0.12, M.dkWood, totalW/2,4,0.38, gfG); // door slab
+  box(4.3,8.5,0.08, M.ggTrim, totalW/2,4,0.3, gfG); // granite frame
+  box(1.8,2,0.13, M.glass, totalW/2-0.9,7,0.38, gfG); // glass insert L
+  box(1.8,2,0.13, M.glass, totalW/2+0.9,7,0.38, gfG); // glass insert R
+  // Door handle
+  cyl(0.04,0.04,0.5,M.gold, totalW/2+1.7,4.5,0.5, gfG, 8);
+
+  // Left window GF front
+  box(3.5,4.5,0.1, M.glass, 2.2,5.5,0.38, gfG);
+  box(3.7,4.7,0.08, M.winFrame, 2.2,5.5,0.3, gfG);
+  // window sill
+  box(3.8,0.2,0.4, M.ggTrim, 2.2,3.2,0.35, gfG);
+  // lintel
+  box(3.8,0.2,0.4, M.ggTrim, 2.2,7.95,0.35, gfG);
+
+  // Right window GF front
+  box(3.5,4.5,0.1, M.glass, totalW-3,5.5,0.38, gfG);
+  box(3.7,4.7,0.08, M.winFrame, totalW-3,5.5,0.3, gfG);
+  box(3.8,0.2,0.4, M.ggTrim, totalW-3,3.2,0.35, gfG);
+  box(3.8,0.2,0.4, M.ggTrim, totalW-3,7.95,0.35, gfG);
+
+  // FF FRONT windows (z=0, y=ffBase+1 to ffBase+6)
+  const ffB=gfH+slabT;
+  box(4.5,5,0.1, M.glass, 4,ffB+4,0.38, ffG);
+  box(4.7,5.2,0.08, M.winFrame, 4,ffB+4,0.3, ffG);
+  box(4.8,0.2,0.4, M.ggTrim, 4,ffB+1.4,0.35, ffG);
+  box(4.8,0.2,0.4, M.ggTrim, 4,ffB+6.6,0.35, ffG);
+
+  box(4.5,5,0.1, M.glass, totalW-4,ffB+4,0.38, ffG);
+  box(4.7,5.2,0.08, M.winFrame, totalW-4,ffB+4,0.3, ffG);
+  box(4.8,0.2,0.4, M.ggTrim, totalW-4,ffB+1.4,0.35, ffG);
+  box(4.8,0.2,0.4, M.ggTrim, totalW-4,ffB+6.6,0.35, ffG);
+
+  // SIDE WINDOWS (left wall)
+  // GF bedroom window
+  box(0.1,3.5,3.5, M.glass, 0.38,4.5,37, gfG);
+  box(0.08,3.7,3.7, M.winFrame, 0.3,4.5,37, gfG);
+  box(0.4,0.2,3.8, M.ggTrim, 0.35,2.75,37, gfG);
+  box(0.4,0.2,3.8, M.ggTrim, 0.35,6.3,37, gfG);
+
+  // GF hall window (left)
+  box(0.1,3.5,3, M.glass, 0.38,5,22, gfG);
+  box(0.08,3.7,3.2, M.winFrame, 0.3,5,22, gfG);
+  box(0.4,0.2,3.3, M.ggTrim, 0.35,3.25,22, gfG);
+  box(0.4,0.2,3.3, M.ggTrim, 0.35,6.8,22, gfG);
+}
+
+/* ════════════════════════════════════════════════
+   BALCONY (FF Front, 8ft wide, 4ft deep)
+   ════════════════════════════════════════════════ */
+function buildBalcony() {
+  const ffB=gfH+slabT;
+  const balY=ffB; const balZ=-4; const balW=8; const balD=4;
+  const balX=totalW/2;
+
+  // Slab
+  box(balW,slabT,balD, M.ggFloor, balX,balY,balZ/2+0.5, ffG);
+  // Knee walls (sides)
+  box(wallT,3,balD, M.extWall, balX-balW/2,balY+1.5,-balD/2+0.5, ffG);
+  box(wallT,3,balD, M.extWall, balX+balW/2,balY+1.5,-balD/2+0.5, ffG);
+  // Knee wall granite top rail
+  box(wallT+0.1,0.15,balD, M.ggTrim, balX-balW/2,balY+3.075,-balD/2+0.5, ffG);
+  box(wallT+0.1,0.15,balD, M.ggTrim, balX+balW/2,balY+3.075,-balD/2+0.5, ffG);
+  // Frosted glass panels front
+  box(balW,2.5,0.08, M.frostGlass, balX,balY+1.8,-balD+0.5+0.04, ffG);
+  // Steel verticals (railing posts)
+  for(let i=0;i<=8;i++){
+    box(0.06,2.5,0.06, M.chrome, balX-balW/2+i, balY+1.8,-balD+0.5, ffG);
   }
+  // Top rail
+  box(balW+0.2,0.08,0.12, M.chrome, balX,balY+3.05,-balD+0.5, ffG);
+  // Granite floor edge trim
+  box(balW,0.12,0.12, M.ggTrim, balX,balY+slabT,-balD+0.5, ffG);
 }
 
-function mainDoor(grp,cx,cz,y0=0){
-  const dw=3.5,dh=7;
-  // Galaxy granite frame
-  box(dw+.5,.3,.2,M.ggTrim,cx,y0+dh+.15,cz,grp);
-  box(.25,dh,.2,M.ggTrim,cx-dw/2-.125,y0+dh/2,cz,grp);
-  box(.25,dh,.2,M.ggTrim,cx+dw/2+.125,y0+dh/2,cz,grp);
-  // Two door leaves (dark teak)
-  box(dw/2-.1,dh-.1,.16,M.dkWood,cx-dw/4,y0+dh/2,cz,grp);
-  box(dw/2-.1,dh-.1,.16,M.dkWood,cx+dw/4,y0+dh/2,cz,grp);
-  // Raised panels on each leaf
-  box(dw/2-.35,2.4,.06,M.wood,cx-dw/4,y0+dh-2,cz-.05,grp);
-  box(dw/2-.35,3.,.06,M.wood,cx-dw/4,y0+2.2,cz-.05,grp);
-  box(dw/2-.35,2.4,.06,M.wood,cx+dw/4,y0+dh-2,cz-.05,grp);
-  box(dw/2-.35,3.,.06,M.wood,cx+dw/4,y0+2.2,cz-.05,grp);
-  // Gold handles
-  cyl(.04,.04,.7,M.gold,cx-.55,y0+3.5,cz-.14,grp,16);
-  cyl(.04,.04,.7,M.gold,cx+.55,y0+3.5,cz-.14,grp,16);
-  box(.06,.06,.3,M.gold,cx-.55,y0+3.5,cz-.28,grp);
-  box(.06,.06,.3,M.gold,cx+.55,y0+3.5,cz-.28,grp);
-}
-
-function intDoor(grp,cx,cz,y0=0,dw=3,dh=7,mat=M.dkWood){
-  // Granite frame
-  box(dw+.3,.2,.18,M.ggTrim,cx,y0+dh+.1,cz,grp);
-  box(.2,dh,.18,M.ggTrim,cx-dw/2-.1,y0+dh/2,cz,grp);
-  box(.2,dh,.18,M.ggTrim,cx+dw/2+.1,y0+dh/2,cz,grp);
-  box(dw-.08,dh-.08,.12,mat,cx,y0+dh/2,cz,grp);
-  box(dw-.35,2.,.05,M.wood,cx,y0+dh-1.5,cz-.07,grp);
-  box(dw-.35,3.2,.05,M.wood,cx,y0+2.2,cz-.07,grp);
-  cyl(.03,.03,.55,M.gold,cx+.6,y0+3.5,cz-.12,grp,12);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STAIRCASE (2 flights + midland landing)
-// ─────────────────────────────────────────────────────────────────────────────
-function buildStairs(){
-  const sw=3.0, td=.75, rh=.583;
-  const sx=D.wt+.1;  // left side x
-  // Flight 1: 10 steps from z=D.wt, going back (z+)
+/* ════════════════════════════════════════════════
+   STAIRCASE (x=0..3.75, z=0..14)
+   ════════════════════════════════════════════════ */
+function buildStairs() {
+  const stairW=3.0;
+  const numSteps=19;
+  // GF flight: 10 steps from z=2 going up
   for(let i=0;i<10;i++){
-    const tz=D.wt+i*td+td/2, ty=rh/2+i*rh;
-    box(sw,rh,td,M.stairRiser,sx+sw/2,ty,tz,gfG);
-    box(sw,.08,td+.02,M.stair,sx+sw/2,ty+rh/2+.04,tz,gfG);
+    // tread
+    box(stairW,0.1,treadD, M.ggFloor, 1.875,i*riserH+riserH+0.05, 2+i*treadD, gfG);
+    // white riser
+    box(stairW,riserH,0.06, M.white, 1.875,i*riserH+riserH/2, 2+i*treadD, gfG);
   }
-  // Midland landing at z≈8.25, y=5.83
-  const mlZ=D.wt+10*td, mlY=10*rh;
-  box(sw,.12,2.75,M.lap,sx+sw/2,mlY+.06,mlZ+1.375,gfG);
-  // Flight 2: 9 steps up to FF
+  // Landing at y=10*riserH
+  const landY=10*riserH;
+  box(stairW,0.1,2.5, M.ggFloor, 1.875,landY+0.05, 2+10*treadD+1.25, gfG);
+  // FF flight: 9 steps going up from landing
   for(let i=0;i<9;i++){
-    const tz=mlZ+2.75+i*td+td/2, ty=mlY+rh/2+i*rh;
-    box(sw,rh,td,M.stairRiser,sx+sw/2,ty,tz,gfG);
-    box(sw,.08,td+.02,M.stair,sx+sw/2,ty+rh/2+.04,tz,gfG);
+    box(stairW,0.1,treadD, M.ggFloor, 1.875,landY+0.1+(i+1)*riserH, 2+10*treadD+2.5-i*treadD, gfG);
+    box(stairW,riserH,0.06, M.white, 1.875,landY+0.1+(i+1)*riserH-riserH/2, 2+10*treadD+2.5-i*treadD, gfG);
   }
-  // Stair wall (left side enclosure)
-  box(D.wt,D.gfH,D.staEndZ,M.intWall,sx,D.gfH/2,D.staEndZ/2,gfG);
-  // Metal railings
-  const railX=sx+sw-.1;
-  for(let i=0;i<=10;i+=2){
-    const tz=D.wt+i*td, ty=i*rh;
-    cyl(.04,.04,1,M.metal,railX,ty+.5,tz,gfG,8);
-  }
-  // Handrail along flight 1
-  box(.06,.06,10*td+.5,M.wood,railX,10*rh/2+.6,D.wt+5*td,gfG,0,0,Math.atan2(10*rh,10*td));
+  // Glass + chrome railing (GF flight)
+  box(0.06,landY,0.06, M.chrome, 0.45,landY/2,2, gfG); // left post
+  box(0.06,landY,0.06, M.chrome, 3.3,landY/2,2, gfG);  // right post
+  box(0.05,landY,0.35, M.frostGlass, 0.45,landY/2,2+4*treadD, gfG);
+  box(stairW+0.05,0.06,0.06, M.chrome, 1.875,landY,2, gfG); // handrail
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POOJA NICHE
-// ─────────────────────────────────────────────────────────────────────────────
-function buildPooja(grp,x,z,yBase=0){
-  // Recessed niche, arch top
-  box(2,.08,.75,M.wood,x,yBase+3.1,z+.35,grp);       // shelf
-  box(1.9,3.5,.04,M.poojaWall,x,yBase+4.55,z+.36,grp); // back panel
-  box(2,.12,.8,M.ggTrim,x,yBase+2.9,z+.35,grp);       // granite shelf
-  // Arch
-  const ag=new THREE.CylinderGeometry(1,.95,.04,16,1,false,0,Math.PI);
-  const am=new THREE.Mesh(ag,M.poojaWall); am.rotation.set(Math.PI/2,Math.PI,0);
-  am.position.set(x,yBase+6.4,z+.36); grp.add(am);
-  // Warm golden light
-  const pl=new THREE.PointLight(0xffcc44,2.5,6);
-  pl.position.set(x,yBase+5.5,z); grp.add(pl); iLights.push(pl);
-  // Decorative lamp on shelf
-  cyl(.08,.12,.3,M.gold,x,yBase+3.3,z+.15,grp,12);
-  cyl(.15,.05,.05,M.gold,x,yBase+3.5,z+.15,grp,12);
+/* ════════════════════════════════════════════════
+   GF HALL INTERIOR
+   ════════════════════════════════════════════════ */
+function buildGFHall() {
+  const g=furnG;
+  // Feature/accent wall at z=14 (already exterior, paint interior face teal)
+  box(innerW,gfH,0.05, M.accentTeal, totalW/2,gfH/2,hallZ+wallT+0.025, gfG);
+
+  // TV unit
+  box(5,0.6,1.2, M.dkWood, totalW/2,0.3,hallZ+wallT+0.7, g);
+  // TV (screen)
+  box(4.5,2.8,0.08, M.accentGrey, totalW/2,1.8,hallZ+wallT+0.2, g);
+  // TV screen glow
+  const tvScreen=new THREE.Mesh(new THREE.BoxGeometry(4.4,2.7,0.01),
+    mat(0x334466,{emissive:0x112233,emissiveIntensity:0.8}));
+  tvScreen.position.set(totalW/2,1.8,hallZ+wallT+0.15);
+  g.add(tvScreen);
+  // TV frame
+  box(4.6,2.9,0.04, M.chrome, totalW/2,1.8,hallZ+wallT+0.19, g);
+
+  // Area rug
+  const rugMat=mat(0xd4c090,{roughness:0.95});
+  box(6,0.05,4, rugMat, totalW/2,0.06,hallEndZ-8, g);
+
+  // L-shaped sofa
+  box(7,2.2,2.2, M.dkGrey, totalW/2,1.1,hallEndZ-6, g); // main section
+  box(2.2,2.2,3.5, M.dkGrey, totalW/2-4,1.1,hallEndZ-5.75, g); // L arm
+  // Backrest
+  box(7,0.8,0.5, M.dkGrey, totalW/2,2.3,hallEndZ-5.1, g);
+  box(2.2,0.8,3.5, M.dkGrey, totalW/2-4,2.3,hallEndZ-4.25, g);
+  // Sofa legs
+  // sofa legs handled by main block geometry
+  // Throw pillows
+  box(0.9,0.9,0.25, M.mustard, totalW/2-1.5,2.5,hallEndZ-5.3, g);
+  box(0.9,0.9,0.25, M.terracotta, totalW/2+1.5,2.5,hallEndZ-5.3, g);
+  box(0.9,0.9,0.25, M.mustard, totalW/2-4.1,2.5,hallEndZ-5, g);
+
+  // Glass coffee table
+  box(3,0.08,1.5, M.glass, totalW/2,1.5,hallEndZ-6.5, g);
+  // chrome legs
+  box(0.06,1.5,0.06, M.chrome, totalW/2-1.4,0.75,hallEndZ-6.2, g);
+  box(0.06,1.5,0.06, M.chrome, totalW/2+1.4,0.75,hallEndZ-6.2, g);
+  box(0.06,1.5,0.06, M.chrome, totalW/2-1.4,0.75,hallEndZ-6.8, g);
+  box(0.06,1.5,0.06, M.chrome, totalW/2+1.4,0.75,hallEndZ-6.8, g);
+
+  // False ceiling recess
+  box(innerW-0.3,0.3,hallEndZ-hallZ-0.5, M.accentGrey, totalW/2,gfH-0.15,hallZ+wallT+(hallEndZ-hallZ)/2, g);
+  // LED strip glow
+  const ledMat=mat(0xfff0d0,{emissive:0xfff0d0,emissiveIntensity:0.7});
+  box(innerW-0.5,0.05,0.1, ledMat, totalW/2,gfH-0.32,hallZ+wallT+0.5, g); // front strip
+  box(innerW-0.5,0.05,0.1, ledMat, totalW/2,gfH-0.32,hallEndZ-0.5, g);   // back strip
+  box(0.1,0.05,hallEndZ-hallZ-0.5, ledMat, wallT+0.5,gfH-0.32,hallZ+wallT+(hallEndZ-hallZ)/2, g);
+  box(0.1,0.05,hallEndZ-hallZ-0.5, ledMat, totalW-wallT-0.5,gfH-0.32,hallZ+wallT+(hallEndZ-hallZ)/2, g);
+
+  // Pendant lights (2)
+  cyl(0.08,0.35,0.5,M.gold, totalW/2-2.5,gfH-1.2,hallZ+wallT+6, g, 12);
+  box(0.04,1.5,0.04, M.chrome, totalW/2-2.5,gfH-0.95,hallZ+wallT+6, g);
+  cyl(0.08,0.35,0.5,M.gold, totalW/2+2.5,gfH-1.2,hallZ+wallT+6, g, 12);
+  box(0.04,1.5,0.04, M.chrome, totalW/2+2.5,gfH-0.95,hallZ+wallT+6, g);
+
+  // Indoor palm
+  cyl(0.15,0.2,2.5,M.dkWood, wallT+1.2,1.25,hallEndZ-2, g);
+  const treeMat=mat(0x2a6a35,{roughness:0.9});
+  sph(0.9,treeMat, wallT+1.2,3.2,hallEndZ-2, g);
+  sph(0.7,treeMat, wallT+1.8,3.8,hallEndZ-2.5, g);
+
+  // Wall art frames (side walls)
+  box(0.05,2,3, M.dkWood, wallT+0.03,5,hallZ+wallT+8, g);
+  box(0.04,1.8,2.8, mat(0x334455), wallT+0.05,5,hallZ+wallT+8, g);
+  box(0.05,2,3, M.dkWood, totalW-wallT-0.03,5,hallZ+wallT+8, g);
+  box(0.04,1.8,2.8, mat(0x554433), totalW-wallT-0.05,5,hallZ+wallT+8, g);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// KITCHEN
-// ─────────────────────────────────────────────────────────────────────────────
-function buildKitchen(grp,x1,x2,z1,z2){
-  const cx=(x1+x2)/2, cz=(z1+z2)/2;
-  const ctrH=3.0, ctrD=2.25;
-  // L-shaped galaxy granite counter
-  // Along right wall
-  box(ctrD,ctrH,z2-z1-1,M.ggCounter, x2-ctrD/2,ctrH/2,cz-.5,grp);
-  box(ctrD+.25,.12,z2-z1-1,M.ggTrim, x2-ctrD/2+.05,ctrH+.06,cz-.5,grp);
-  // Along back wall (z=z2)
-  box(x2-x1-ctrD,ctrH,ctrD,M.ggCounter, cx-ctrD/4,ctrH/2,z2-ctrD/2-.1,grp);
-  box(x2-x1-ctrD,.12,ctrD+.25,M.ggTrim, cx-ctrD/4,ctrH+.06,z2-ctrD/2-.1,grp);
-  // Overhead cabinets (wood)
-  box(ctrD,3,z2-z1-1.5,M.wood, x2-ctrD/2,D.gfH-1.5,cz-.5,grp);
-  box(x2-x1-ctrD,2.5,ctrD,M.wood, cx-ctrD/4,D.gfH-1.25,z2-ctrD/2-.1,grp);
-  // Cabinet doors (vertical lines)
-  for(let i=0;i<3;i++){
-    box(.04,2.9,z2-z1-1.5,M.dkWood, x2-ctrD*.85+i*.1,D.gfH-1.5,cz-.5,grp);
-  }
-  // Sink
-  box(1.8,.15,1.0,M.metal, x2-ctrD/2,ctrH+.08,z1+2.5,grp);
-  cyl(.12,.12,.06,M.metal, x2-ctrD/2,ctrH+.22,z1+2.5,grp,12);
-  cyl(.02,.02,.5,M.metal,  x2-ctrD/2+.2,ctrH+.48,z1+2.5,grp,8);
-  // Stove / hob
-  box(1.8,.12,.9,M.metal, x2-ctrD/2,ctrH+.06,z1+5.5,grp);
-  for(let bi=0;bi<4;bi++){
-    cyl(.15,.15,.02,M.metal, x2-ctrD/2+(bi%2-.5)*.6,ctrH+.14,(z1+5.5)+(Math.floor(bi/2)-.5)*.35,grp,16);
-  }
-  // Kitchen dadoing (ceramic tiles lower 1.75' of right wall)
-  box(.06,1.75,z2-z1-.5,M.tile, x2-.03,D.wt+.875,cz,grp);
-  // Exhaust/chimney
-  box(.5,2,.4,M.metal, x2-ctrD/2,D.gfH-1,z1+5.5,grp);
-  // Refrigerator (tall, white, in corner near back wall)
-  box(2.2,5.8,2.4,M.white, x1+1.3,2.9,z2-1.4,grp);
-  box(2.2,.08,2.4,M.metal, x1+1.3,5.84,z2-1.4,grp);  // fridge top
-  box(.06,5.5,2.3,M.metal, x1+2.35,2.75,z2-1.4,grp); // handle side strip
-  box(.08,.5,.08,M.gold,   x1+2.4,4.5,z2-1.0,grp);    // upper handle
-  box(.08,.5,.08,M.gold,   x1+2.4,1.2,z2-1.0,grp);    // lower handle
-  // Microwave (on counter shelf)
-  box(1.6,.9,1.1,M.metal,  x2-ctrD/2,ctrH+2.65,z1+3.5,grp);
-  box(1.55,.84,.1,M.glass,  x2-ctrD/2,ctrH+2.65,z1+2.95,grp); // door glass
-  box(.25,.7,.15,M.metal,   x2-ctrD*.9,ctrH+2.65,z1+3.55,grp); // control panel
+/* ════════════════════════════════════════════════
+   GF KITCHEN
+   ════════════════════════════════════════════════ */
+function buildGFKitchen() {
+  const g=furnG;
+  const kZ=4; const kZEnd=hallZ;
+  // Lower grey cabinets (along right wall)
+  box(3.5,3,wallT+0.6, M.accentGrey, totalW-wallT-0.5,1.5,kZ+2.5, g);
+  // Upper white cabinets
+  box(3.5,2,wallT+0.4, M.white, totalW-wallT-0.5,gfH-3.5,kZ+2.5, g);
+  // Countertop (light granite/quartz)
+  box(3.6,0.12,wallT+0.65, M.ltCounter, totalW-wallT-0.5,3.06,kZ+2.5, g);
+  // Metro tile backsplash
+  box(3.5,3,0.05, M.metroTile, totalW-wallT-0.1,4.5,kZ+2.5, g);
+
+  // Left side cabinets
+  box(wallT+0.5,3,4, M.accentGrey, wallT+0.5,1.5,kZ+3, g);
+  box(wallT+0.5,2,4, M.white, wallT+0.5,gfH-3.5,kZ+3, g);
+  box(wallT+0.55,0.12,4.05, M.ltCounter, wallT+0.5,3.06,kZ+3, g);
+
+  // Sink (right wall)
+  box(1.2,0.15,0.7, M.chrome, totalW-wallT-1.8,3.14,kZ+1.5, g);
+  box(1.0,0.12,0.5, mat(0x888888,{roughness:0.3,metalness:0.8}), totalW-wallT-1.8,3.1,kZ+1.5, g);
+  // Tap
+  box(0.04,0.6,0.04, M.chrome, totalW-wallT-1.8,3.4,kZ+1.3, g);
+  box(0.3,0.04,0.04, M.chrome, totalW-wallT-1.8,3.7,kZ+1.3, g);
+
+  // Stove/hob
+  box(0.8,0.05,0.6, mat(0x111111,{roughness:0.3}), totalW-wallT-1.2,3.1,kZ+3.5, g);
+  // Burner rings
+  [[-0.2,-0.1],[0.2,-0.1],[-0.2,0.15],[0.2,0.15]].forEach(([ox,oz])=>{
+    cyl(0.07,0.07,0.02,M.metal, totalW-wallT-1.2+ox,3.13,kZ+3.5+oz, g, 12);
+  });
+  // Chimney
+  box(0.9,2.5,0.5, mat(0x555555,{roughness:0.2,metalness:0.8}), totalW-wallT-1.2,gfH-2.5,kZ+3.6, g);
+
+  // Refrigerator
+  box(2,5.5,1.5, mat(0xcccccc,{roughness:0.15,metalness:0.7}), totalW-wallT-1.3,2.75,kZ+0.5, g);
+  box(1.9,0.05,1.4, M.chrome, totalW-wallT-1.3,5.55,kZ+0.5, g); // top edge
+
+  // Microwave (in upper cabinet)
+  box(1.2,0.8,0.6, mat(0x111111,{roughness:0.2}), totalW-wallT-1.5,gfH-2.8,kZ+3, g);
+
+  // Peninsula / breakfast bar
+  box(1.8,3,2, M.ltCounter, 4.5,1.5,hallZ-1.5, g);
+  box(1.9,0.12,2.1, M.ggCounter, 4.5,3.06,hallZ-1.5, g); // top
+  // Bar stools (2)
+  cyl(0.25,0.25,0.1,M.dkGrey, 4.5,3.5,hallZ-0.8, g, 12);
+  cyl(0.04,0.04,1.2,M.chrome, 4.5,2.9,hallZ-0.8, g, 8);
+  cyl(0.25,0.25,0.1,M.dkGrey, 4.5,3.5,hallZ-2.2, g, 12);
+  cyl(0.04,0.04,1.2,M.chrome, 4.5,2.9,hallZ-2.2, g, 8);
+
+  // Pendant over peninsula
+  cyl(0.06,0.25,0.4,M.gold, 4.5,gfH-1.3,hallZ-1.5, g, 12);
+  box(0.04,1.2,0.04, M.chrome, 4.5,gfH-0.9,hallZ-1.5, g);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BATHROOM
-// ─────────────────────────────────────────────────────────────────────────────
-function buildBath(grp,x1,x2,z1,z2,yBase=0){
-  const cz=(z1+z2)/2;
-  // Floor tile
-  box(x2-x1,0.12,z2-z1,M.bathTile, (x1+x2)/2,yBase+.06,cz,grp);
-  // Wall tiles lower 5ft
-  box(.06,5,z2-z1,M.bathTile, x1+.03,yBase+2.5,cz,grp);
-  box(.06,5,z2-z1,M.bathTile, x2-.03,yBase+2.5,cz,grp);
-  // WC
-  box(1.6,1.4,2.2,M.white,(x1+x2)/2+.8,yBase+.7,z1+1.6,grp);
-  box(1.4,.35,1.4,M.white,(x1+x2)/2+.8,yBase+1.55,z1+.9,grp);
-  // Basin
-  box(1.7,.7,1.0,M.white, (x1+x2)/2-.9,yBase+2.55,z2-.8,grp);
-  cyl(.1,.15,.5,M.white, (x1+x2)/2-.9,yBase+2.1,z2-.8,grp,12);
-  cyl(.02,.02,.5,M.metal, (x1+x2)/2-.7,yBase+3.1,z2-.8,grp,8);
-  // Shower enclosure (glass partition)
-  box(.06,6.5,z2-z1-2,M.glass,(x1+x2)/2+.8,yBase+3.5,cz+.8,grp);
-  box(x2-(x1+x2)/2-.8,.06,z2-z1-2,M.glass,(x1+x2)/2+1+(x2-(x1+x2)/2-.8)/2,yBase+7,cz+.8,grp);
-  // Shower arm + head on back wall
-  cyl(.025,.025,1.2,M.metal,x2-.12,yBase+7.2,z1+1.4,grp,8);              // vertical pipe
-  box(.025,.025,.9,M.metal,x2-.15,yBase+8.3,z1+1.85,grp);                 // arm
-  cyl(.22,.2,.06,M.metal,x2-.15,yBase+8.3,z1+2.35,grp,16);               // shower head
-  // Towel rails
-  box(.06,.06,2,M.gold,(x1+x2)/2-.9,yBase+4.5,z2-.08,grp);
-  cyl(.05,.05,.15,M.gold,(x1+x2)/2-.9-1,yBase+4.5,z2-.08,grp,8);
-  cyl(.05,.05,.15,M.gold,(x1+x2)/2-.9+1,yBase+4.5,z2-.08,grp,8);
-  // Back wall tiles
-  box(x2-x1,.06,5,M.bathTile,(x1+x2)/2,yBase+2.5,z1+.03,grp);
-  // Mirror above basin
-  box(1.8,2.4,.05,M.glass,(x1+x2)/2-.9,yBase+4.5,z2-.08,grp);
-  box(2,.08,.1,M.gold,(x1+x2)/2-.9,yBase+5.75,z2-.04,grp);   // mirror top frame
-  box(2,.08,.1,M.gold,(x1+x2)/2-.9,yBase+3.3,z2-.04,grp);    // mirror bottom frame
-  // Ventilator
-  box(.06,.8,2,M.glass, x1+.03,yBase+6.5,cz+.5,grp);
-  box(.12,.85,2.05,M.winFrame, x1-.01,yBase+6.5,cz+.5,grp);
-}
+/* ════════════════════════════════════════════════
+   GF BEDROOM
+   ════════════════════════════════════════════════ */
+function buildGFBedroom() {
+  const g=furnG;
+  const bZ=hallEndZ+wallT; const bZEnd=totalL-wallT;
+  const bW=toiletX-wallT;
+  const cx=wallT+bW/2;
+  const cz=(bZ+bZEnd)/2;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BEDROOM
-// ─────────────────────────────────────────────────────────────────────────────
-function buildBed(grp,x1,x2,z1,z2,yBase=0,col=M.blue){
-  const cx=(x1+x2)/2, cz=(z1+z2)/2;
-  const bw=6.5,bd=7;
-  const bx=cx, bz=cz+1.5;
-  // Bed base
-  box(bw,.5,bd,M.dkWood,bx,yBase+.25,bz,grp);
-  // Mattress
-  box(bw-.2,.45,bd-.3,M.white,bx,yBase+.7,bz,grp);
-  // Bedsheet
-  box(bw-.2,.06,bd-.3,col,bx,yBase+.93,bz,grp);
-  // Pillows
-  box(1.8,.3,1.1,M.white,bx-1.8,yBase+1.02,bz-2.5,grp);
-  box(1.8,.3,1.1,M.white,bx+1.8,yBase+1.02,bz-2.5,grp);
-  // Headboard
-  box(bw+.2,2.8,.25,M.dkWood,bx,yBase+1.65,bz-bd/2-.12,grp);
-  box(bw-.3,2.4,.08,M.wood,bx,yBase+1.8,bz-bd/2-.25,grp);
+  // Feature wall (z=hallEndZ) grey
+  box(bW,gfH,0.05, M.accentGrey, cx,gfH/2,bZ+0.02, gfG);
+
+  // King bed
+  box(6,1.8,7, M.offWhite, cx,0.9,cz+1, g); // mattress
+  box(6.1,2.5,0.8, mat(0x3a3a4a,{roughness:0.7}), cx,1.25,bZ+1.2, g); // headboard
+  box(6.3,0.15,7.2, M.offWhite, cx,1.82,cz+1, g); // sheet
+  box(6,0.5,2.5, M.blue, cx,1.95,cz+2.5, g); // throw blanket
+  box(1.5,0.7,1.5, M.white, cx-1.8,1.85,bZ+1.8, g); // pillow L
+  box(1.5,0.7,1.5, M.white, cx+1.8,1.85,bZ+1.8, g); // pillow R
+  // Framed painting above headboard
+  box(0.05,2,3, M.dkWood, cx,4.5,bZ+0.7, g);
+  box(0.04,1.8,2.8, mat(0x6a8faa), cx,4.5,bZ+0.68, g);
+
   // Bedside tables
-  box(1.5,1.6,1.5,M.wood,bx-bw/2-.9,yBase+.8,bz-1.5,grp);
-  box(1.5,1.6,1.5,M.wood,bx+bw/2+.9,yBase+.8,bz-1.5,grp);
+  box(1.5,2,1.5, M.wood, cx-4.5,1,bZ+2, g);
+  box(1.5,2,1.5, M.wood, cx+4.5,1,bZ+2, g);
   // Lamps
-  cyl(.06,.1,.5,M.gold,bx-bw/2-.9,yBase+1.85,bz-1.5,grp,10);
-  cyl(.2,.2,.04,M.white,bx-bw/2-.9,yBase+2.1,bz-1.5,grp,12);
-  cyl(.06,.1,.5,M.gold,bx+bw/2+.9,yBase+1.85,bz-1.5,grp,10);
-  cyl(.2,.2,.04,M.white,bx+bw/2+.9,yBase+2.1,bz-1.5,grp,12);
-  // Wardrobe (sliding, 6ft wide x 8ft tall)
-  box(6,.12,2,M.ggTrim,x2-1.25,yBase+8+.06,cz-2,grp);    // top rail
-  box(6,8,2,M.dkWood, x2-1.25,yBase+4,cz-2,grp);
-  box(.04,8,2.1,M.ggTrim, x2-1.25,yBase+4,cz-2,grp);     // centre divider
-  box(6.1,.12,2.1,M.ggTrim,x2-1.25,yBase+.06,cz-2,grp);   // bottom track
-  // Mirror / dressing table
-  box(3,4.5,.08,M.glass, x1+D.wt+1.8,yBase+4,z1+1.2,grp);
-  box(3.2,.12,1.4,M.wood, x1+D.wt+1.8,yBase+2.5,z1+1.5,grp);
-  box(3.2,2.5,.1,M.dkWood,x1+D.wt+1.8,yBase+1.25,z1+1.95,grp);
+  cyl(0.1,0.1,0.8,M.gold, cx-4.5,2.4,bZ+2, g);
+  cyl(0.3,0.2,0.05,M.gold, cx-4.5,2.85,bZ+2, g);
+  cyl(0.1,0.1,0.8,M.gold, cx+4.5,2.4,bZ+2, g);
+  cyl(0.3,0.2,0.05,M.gold, cx+4.5,2.85,bZ+2, g);
+
+  // Built-in wardrobe (right wall of bedroom)
+  box(0.7,gfH,bZEnd-bZ-1, M.wood, toiletX-wallT-0.35,gfH/2,bZ+(bZEnd-bZ-1)/2+0.5, g);
+  box(0.5,0.15,bZEnd-bZ-1, M.ggTrim, toiletX-wallT-0.4,gfH-0.07,bZ+(bZEnd-bZ-1)/2+0.5, g);
+  // Wardrobe panel divisions
+  for(let i=1;i<=3;i++){
+    box(0.05,gfH,0.05, M.ggTrim, toiletX-wallT-0.15, gfH/2, bZ+i*(bZEnd-bZ-1)/4+0.5, g);
+  }
+
   // Ceiling fan
-  cyl(.06,.06,1,M.metal,cx,yBase+D.gfH-.5,cz,grp,8);
-  box(4.5,.08,.25,M.metal,cx,yBase+D.gfH-1,cz,grp);
-  box(.25,.08,4.5,M.metal,cx,yBase+D.gfH-1,cz,grp);
+  cyl(0.15,0.15,0.3,M.chrome, cx,gfH-0.45,cz, g);
+  box(4,0.1,0.35, M.white, cx,gfH-0.5,cz, g); // blades (horizontal)
+  box(0.35,0.1,4, M.white, cx,gfH-0.5,cz, g); // blades (perpendicular)
+
+  // Dressing mirror
+  box(0.05,4,2.5, mat(0xaabbcc,{roughness:0.05,metalness:0.3}), toiletX-wallT-0.05,3.5,bZEnd-2, g);
+  box(0.05,0.2,2.6, M.gold, toiletX-wallT-0.05,5.6,bZEnd-2, g); // mirror top frame
+  // Vanity stool
+  box(1.2,1.2,1.2, M.burgundy, toiletX-wallT-2,0.6,bZEnd-2, g);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HALL FURNITURE
-// ─────────────────────────────────────────────────────────────────────────────
-function buildHallFurn(grp,x1,x2,z1,z2,yBase=0){
-  const cx=(x1+x2)/2, cz=(z1+z2)/2;
-  // 3-seater sofa (along back wall)
-  box(8,1.6,2.8,M.blue,cx,yBase+.8,z2-2.2,grp);
-  box(8,2.2,.45,M.blue,cx,yBase+1.6,z2-.35,grp);
-  box(.45,2.8,2.8,M.blue,cx-4.22,yBase+1,z2-2.2,grp);
-  box(.45,2.8,2.8,M.blue,cx+4.22,yBase+1,z2-2.2,grp);
-  // Cushions
-  for(let i=-1;i<=1;i++)
-    box(2.2,.35,1.8,M.red,cx+i*2.6,yBase+1.8,z2-2.6,grp);
-  // Coffee table
-  box(3.5,.12,1.8,M.ggTrim,cx,yBase+1.5,cz,grp);
-  box(3.5,.06,1.8,M.wood,cx,yBase+1.4,cz,grp);
-  cyl(.06,.06,1.4,M.metal,cx-1.5,yBase+.7,cz-.7,grp,8);
-  cyl(.06,.06,1.4,M.metal,cx+1.5,yBase+.7,cz-.7,grp,8);
-  cyl(.06,.06,1.4,M.metal,cx-1.5,yBase+.7,cz+.7,grp,8);
-  cyl(.06,.06,1.4,M.metal,cx+1.5,yBase+.7,cz+.7,grp,8);
-  // TV unit (on kitchen-side wall)
-  box(5.5,.8,1.6,M.dkWood,cx,yBase+.4,z1+.85,grp);
-  box(4.5,2.5,.08,M.metal, cx,yBase+2.25,z1+.1,grp);   // TV screen
-  box(4.5,2.5,.04,M.glass, cx,yBase+2.25,z1+.13,grp);
-  // Floor lamp
-  cyl(.05,.05,5.5,M.metal,x2-1.5,yBase+2.75,z2-1,grp,8);
-  sph(.4,M.white,x2-1.5,yBase+5.5,z2-1,grp);
-  // Centre rug suggestion
-  box(5,.02,3.5,M.red,cx,yBase+.01,cz,grp);
+/* ════════════════════════════════════════════════
+   GF BATHROOM
+   ════════════════════════════════════════════════ */
+function buildGFBath() {
+  const g=furnG;
+  const bx1=toiletX+wallT, bx2=totalW-wallT;
+  const bz1=hallEndZ+wallT, bz2=totalL-wallT;
+  const cx=(bx1+bx2)/2, cz=(bz1+bz2)/2;
+  const bW=bx2-bx1, bL=bz2-bz1;
+
+  // Tile walls
+  box(bW,gfH,0.05, M.whiteTile, cx,gfH/2,bz1+0.03, gfG);
+  box(bW,gfH,0.05, M.whiteTile, cx,gfH/2,bz2-0.03, gfG);
+  box(0.05,gfH,bL, M.whiteTile, bx1+0.03,gfH/2,cz, gfG);
+  box(0.05,gfH,bL, M.whiteTile, bx2-0.03,gfH/2,cz, gfG);
+  // Mosaic floor
+  box(bW,0.05,bL, M.mosaicTile, cx,0.03,cz, gfG);
+
+  // Floating vanity
+  box(2.2,2,0.8, mat(0x606060,{roughness:0.6}), cx,1,bz1+0.7, g);
+  box(2.2,0.1,0.8, M.ltCounter, cx,2.05,bz1+0.7, g);
+  // Basin
+  box(1,0.15,0.5, M.white, cx,2.16,bz1+0.65, g);
+  box(0.04,0.4,0.04, M.chrome, cx,2.35,bz1+0.5, g); // tap
+
+  // Backlit mirror
+  box(0.05,3,2, mat(0xaabbdd,{roughness:0.05}), cx,3.7,bz1+0.2, g);
+  const mirrorGlow=mat(0xffffff,{emissive:0xffeedd,emissiveIntensity:0.6,transparent:true,opacity:0.3});
+  box(0.05,3.2,2.2, mirrorGlow, cx,3.7,bz1+0.18, g);
+
+  // Walk-in shower
+  box(0.05,gfH*0.85,2, M.frostGlass, bx2-0.1,gfH*0.425,bz1+2.3, g); // glass door
+  box(2.5,0.05,2, M.ggFloor, bx2-1.25,0.03,bz1+2.3, g); // shower floor dark
+  // Rain shower head
+  box(0.6,0.06,0.6, M.chrome, bx2-1.5,gfH*0.8,bz1+2.3, g);
+  box(0.04,0.8,0.04, M.chrome, bx2-1.5,gfH*0.8-0.5,bz1+2.3, g);
+
+  // WC
+  box(1.5,1.8,2.5, M.white, bx1+1.1,0.9,bz2-1.8, g);
+  box(1.6,0.15,1.6, M.white, bx1+1.1,1.85,bz2-1.2, g); // lid
+  box(1.6,1,1.2, M.white, bx1+1.1,2.1,bz2-0.9, g); // cistern
+
+  // Towel rail
+  box(0.04,0.04,1.5, M.gold, bx2-0.1,4,bz1+0.7, g);
+  box(0.06,0.06,0.06, M.gold, bx2-0.1,4,bz1+0.1, g);
+  box(0.06,0.06,0.06, M.gold, bx2-0.1,4,bz1+1.3, g);
+
+  // Frosted window/ventilator
+  box(0.05,1.5,1.5, M.frostGlass, bx2-0.03,5,cz, g);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ARCH (Hall arch – galaxy granite)
-// ─────────────────────────────────────────────────────────────────────────────
-function buildArch(grp,cx,cz,span,h,thick,yBase=0){
-  const hw=span/2;
-  // Two pilasters
-  box(thick,h,thick,M.ggTrim,cx-hw-thick/2,yBase+h/2,cz,grp);
-  box(thick,h,thick,M.ggTrim,cx+hw+thick/2,yBase+h/2,cz,grp);
-  // Lintel beam
-  box(span+thick*2,.35,thick,M.ggTrim,cx,yBase+h+.175,cz,grp);
-  // Arch curve (half-cylinder)
-  const ag=new THREE.CylinderGeometry(hw+.1,hw+.1,thick,24,1,false,0,Math.PI);
-  const am=new THREE.Mesh(ag,M.ggTrim);
-  am.rotation.set(Math.PI/2,0,0); am.position.set(cx,yBase+h+.1,cz); grp.add(am);
-}
+/* ════════════════════════════════════════════════
+   FIRST FLOOR INTERIORS
+   ════════════════════════════════════════════════ */
+function buildFFInteriors() {
+  const g=furnG;
+  const ffB=gfH+slabT;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TREE
-// ─────────────────────────────────────────────────────────────────────────────
-function addTree(x,z){
-  cyl(.25,.35,4.5,M.wood,x,2.25,z,extG,8);
-  sph(2.8,M.treeLeaf,x,6.5,z,extG);
-  sph(1.8,M.treeLeaf,x+1.5,5.5,z+.8,extG);
-  sph(1.5,M.treeLeaf,x-1.2,5,z-.5,extG);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BUILD GROUND FLOOR
-// ─────────────────────────────────────────────────────────────────────────────
-function buildGF(){
-  const cx=D.cx, wt=D.wt, gH=D.gfH;
-  const iw=D.iw, tl=D.tl, tw=D.tw;
-
-  // --- PLINTH ---
-  box(tw+1.5,.5,tl+1.5,M.ggTrim,cx,-.25,tl/2,gfG);   // granite plinth cap
-  box(tw+2,1.5,tl+2,M.pillar,cx,-1,tl/2,gfG);          // foundation
-
-  // --- GALAXY GRANITE FLOOR ---
-  box(iw,.1,tl-2*wt,M.ggFloor,cx,.05,tl/2,gfG);
-
-  // --- OUTER WALLS ---
-  // Front wall: two sides of main door (dw=3.5)
-  const dw=3.5,dh=7;
-  box((tw-dw)/2-wt*.5,gH,wt,M.extWall, wt+(tw-dw)/4-wt*.25, gH/2,wt/2,gfG);
-  box((tw-dw)/2-wt*.5,gH,wt,M.extWall, tw-(tw-dw)/4+wt*.25, gH/2,wt/2,gfG);
-  box(dw,gH-dh,wt,M.extWall, cx,dh+(gH-dh)/2,wt/2,gfG);
-
-  // Back wall
-  box(tw,gH,wt,M.extWall,cx,gH/2,tl-wt/2,gfG);
-  // Left wall (windows)
-  box(wt,gH,tl,M.extWall,wt/2,gH/2,tl/2,gfG);
-  addWindow(gfG,wt/2,4.8,22,2.5,3.5,'z');
-  addWindow(gfG,wt/2,4.8,36,2.5,3.5,'z');
-  // Right wall (windows)
-  box(wt,gH,tl,M.extWall,tw-wt/2,gH/2,tl/2,gfG);
-  addWindow(gfG,tw-wt/2,4.8,8,2.5,3,'z');
-  addWindow(gfG,tw-wt/2,4.8,22,2.5,3.5,'z');
-  addWindow(gfG,tw-wt/2,4.8,36,2.5,3.5,'z');
-  // Front windows (sides of door)
-  addWindow(gfG,2.2,5.5,wt/2,2.2,3,'x');
-  addWindow(gfG,tw-2.2,5.5,wt/2,2.2,3,'x');
-
-  // --- INTERNAL WALLS ---
-  // Staircase side wall (left side, x≈3.85, z=0..14)
-  const sxW=wt+3.0;  // stair enclosure x
-  box(wt,gH,D.staEndZ,M.intWall,sxW+wt/2,gH/2,D.staEndZ/2,gfG);
-
-  // Bedroom/hall separator at z=30, door on left
-  const bWZ=D.hallEndZ;
-  const bdW=3.0; // door width
-  box(bdW+1,gH,wt,M.intWall, wt+(bdW+1)/2,gH/2,bWZ,gfG);            // left of door
-  box(tw-bdW-1-wt*2-2.5,gH,wt,M.intWall, tw-wt-(tw-bdW-1-wt*2-2.5)/2,gH/2,bWZ,gfG); // right of door
-  box(bdW,gH-dh,wt,M.intWall, wt+bdW+1+bdW/2,dh+(gH-dh)/2,bWZ,gfG);// above door
-
-  // Toilet partition walls
-  const toiletX1=tw-wt-5;   // toilet 5' wide on right
-  const toiletZ1=bWZ;        // toilet behind bedroom wall
-  box(wt,gH,tl-wt-toiletZ1,M.intWall, toiletX1,gH/2,(toiletZ1+tl-wt)/2,gfG);
-  intDoor(gfG, toiletX1+2.5, toiletZ1+.12, 0, 2.5, 7);  // toilet door
-
-  // --- SLAB (ceiling) ---
-  box(tw,D.slabT,tl,M.slab,cx,gH+D.slabT/2,tl/2,gfG);
-  // Ceiling (visible from inside)
-  box(iw,.04,tl-2*wt,M.ceil,cx,gH-.02,tl/2,gfG);
-
-  // --- MAIN DOOR ---
-  mainDoor(gfG,cx,wt/2);
-
-  // --- BEDROOM DOOR ---
-  intDoor(gfG, wt+bdW+1+bdW/2, bWZ);
-
-  // --- POOJA NICHE (right of staircase at z≈12) ---
-  buildPooja(gfG, sxW+2.5, 12.5);
-
-  // --- KITCHEN (right half z=0..14) ---
-  buildKitchen(gfG, sxW+wt, tw-wt, wt, D.staEndZ-wt);
-
-  // --- HALL ARCH (galaxy granite at z=14) ---
-  buildArch(gfG, cx, D.staEndZ, iw, 9, .28);
-
-  // --- HALL FURNITURE ---
-  buildHallFurn(furnG, wt, tw-wt, D.staEndZ, bWZ);
-
-  // --- BEDROOM ---
-  buildBed(furnG, wt, toiletX1, bWZ+wt, tl-wt, 0, M.blue);
-
-  // --- TOILET ---
-  buildBath(gfG, toiletX1, tw-wt, toiletZ1+wt, tl-wt);
-
-  // --- STAIRCASE ---
-  buildStairs();
-
-  // --- GRANITE CLADDING on exterior (raindrops / 1' band) ---
-  box(tw,1,wt+.04,M.ggTrim,cx,.5,wt/2,gfG);      // front
-  box(tw,1,wt+.04,M.ggTrim,cx,.5,tl-wt/2,gfG);   // back
-  box(wt+.04,1,tl,M.ggTrim,wt/2,.5,tl/2,gfG);    // left
-  box(wt+.04,1,tl,M.ggTrim,tw-wt/2,.5,tl/2,gfG); // right
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// BUILD FIRST FLOOR
-// ─────────────────────────────────────────────────────────────────────────────
-function buildFF(){
-  const base=GFT, cx=D.cx, wt=D.wt, fH=D.ffH;
-  const iw=D.iw, tl=D.tl, tw=D.tw;
-
-  function fb(w,h,d,mat,x,y,z,grp=ffG){ return box(w,h,d,mat,x,base+y,z,grp); }
-  function fc(rt,rb,h,mat,x,y,z,grp=ffG){ return cyl(rt,rb,h,mat,x,base+y,z,grp); }
-
-  // Galaxy granite floor
-  fb(iw,.1,tl-2*wt,M.ggFloor,cx,.05,tl/2);
-  // Ceiling
-  fb(iw,.04,tl-2*wt,M.ceil,cx,fH-.02,tl/2);
-
-  // Outer walls
-  // Front: two large windows flanking centre
-  fb(tw,fH,wt,M.extWall,cx,fH/2,wt/2);  // solid then cut with windows
-  addWindow(ffG,cx-4,base+5,wt/2,3,4,'x');
-  addWindow(ffG,cx+4,base+5,wt/2,3,4,'x');
-  fb(tw,fH,wt,M.extWall,cx,fH/2,tl-wt/2); // back
-  fb(wt,fH,tl,M.extWall,wt/2,fH/2,tl/2);  // left
-  fb(wt,fH,tl,M.extWall,tw-wt/2,fH/2,tl/2); // right
-  addWindow(ffG,wt/2,base+4.5,16,3,3.5,'z');
-  addWindow(ffG,wt/2,base+4.5,34,3,3.5,'z');
-  addWindow(ffG,tw-wt/2,base+4.5,16,3,3.5,'z');
-  addWindow(ffG,tw-wt/2,base+4.5,34,3,3.5,'z');
-
-  // Internal: bedroom separator
-  const bWZ=D.hallEndZ;
-  fb(tw-6,fH,wt,M.intWall, cx+3,fH/2,bWZ);
-  fb(3,fH-7,wt,M.intWall,  cx-6.5,fH/2-3.5+(fH-7)/2,bWZ);
-  intDoor(ffG, cx-3, bWZ, base, 3, 7);
-
-  // Toilet FF (same location)
-  const toiletX1=tw-wt-5;
-  fb(wt,fH,tl-wt-bWZ,M.intWall, toiletX1,fH/2,(bWZ+tl-wt)/2);
-  intDoor(ffG, toiletX1+2.5, bWZ+.12, base, 2.5, 7);
-  buildBath(ffG, toiletX1, tw-wt, bWZ+wt, tl-wt, base);
-
-  // Landing railing at stair opening
-  box(.08,3,4,M.metal, D.wt+1.8,base+1.5,D.staEndZ+2,ffG);
-  box(4,.08,.08,M.wood, D.wt+2+1,base+3,D.staEndZ+2,ffG);
-
-  // FF slab + parapet
-  fb(tw,D.slabT,tl,M.slab, cx,fH+D.slabT/2,tl/2);
-  fb(tw,D.para,wt,M.extWall, cx,fH+D.slabT+D.para/2,wt/2);       // front para
-  fb(tw,D.para,wt,M.extWall, cx,fH+D.slabT+D.para/2,tl-wt/2);    // back para
-  fb(wt,D.para,tl,M.extWall, wt/2,fH+D.slabT+D.para/2,tl/2);     // left para
-  fb(wt,D.para,tl,M.extWall, tw-wt/2,fH+D.slabT+D.para/2,tl/2);  // right para
-
-  // Parapet granite capping strip
-  fb(tw,.15,wt+.06,M.ggTrim, cx,fH+D.slabT+D.para+.07,wt/2);
-  fb(tw,.15,wt+.06,M.ggTrim, cx,fH+D.slabT+D.para+.07,tl-wt/2);
-  fb(wt+.06,.15,tl,M.ggTrim, wt/2,fH+D.slabT+D.para+.07,tl/2);
-  fb(wt+.06,.15,tl,M.ggTrim, tw-wt/2,fH+D.slabT+D.para+.07,tl/2);
-
-  // Water tank
-  fb(3,3.5,3,M.extWall, cx,fH+D.slabT+D.para+1.75,8);
-  fb(3.1,.15,3.1,M.ggTrim, cx,fH+D.slabT+D.para+3.57,8);
-
-  // Hall arch FF
-  buildArch(ffG, cx, D.staEndZ, iw, 7.5, .28, base);
-
-  // FF bedroom + hall furniture
-  buildBed(furnG, wt, toiletX1, bWZ+wt, tl-wt, base, M.red);
-  buildHallFurn(furnG, wt, tw-wt, D.staEndZ, bWZ, base);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EXTERIOR
-// ─────────────────────────────────────────────────────────────────────────────
-function buildExt(){
-  const cx=D.cx, tl=D.tl, tw=D.tw;
-  const totalH=GFT+D.ffH+D.slabT+D.para;
-
-  // Ground/lawn
-  box(80,.2,90,M.grass, cx,-.1,tl/2,extG);
-  // Compound front wall
-  box(56,3,.3,M.cpndWall, cx,1.5,-14,extG);
-  // Gate pillars
-  cyl(.75,.75,5.5,M.pillar, cx-3.5,2.75,-14,extG);
-  cyl(.75,.75,5.5,M.pillar, cx+3.5,2.75,-14,extG);
-  box(1.8,.4,1.8,M.ggTrim, cx-3.5,5.45,-14,extG);  // caps
-  box(1.8,.4,1.8,M.ggTrim, cx+3.5,5.45,-14,extG);
-
-  // Granite pathway to front door
-  box(5,.22,14,M.path, cx,.11,-6.5,extG);
-  // Driveway slab on right
-  box(9,.18,16,M.path, cx+13,.09,8,extG);
-
-  // Side walls
-  box(.3,3,60,M.cpndWall, cx-12,1.5,14,extG);
-  box(.3,3,60,M.cpndWall, cx+12,1.5,14,extG);
-
-  // Decorative corner pillars on house
-  cyl(.7,.7,totalH,M.pillar, 0,totalH/2,0,extG);
-  cyl(.7,.7,totalH,M.pillar, tw,totalH/2,0,extG);
-  cyl(.5,.5,totalH,M.pillar, 0,totalH/2,tl,extG);
-  cyl(.5,.5,totalH,M.pillar, tw,totalH/2,tl,extG);
-  // Cap pyramids on pillars
-  [0,tw].forEach(px=>{
-    const pg=new THREE.ConeGeometry(.8,.6,4);
-    const pm=new THREE.Mesh(pg,M.ggTrim);
-    pm.position.set(px,totalH+.3,0); extG.add(pm);
+  // FF HALL
+  box(innerW,ffH,0.05, M.accentGreen, totalW/2,ffB+ffH/2,hallZ+wallT+0.025, ffG);
+  // 2-seater sofa
+  box(5,1.8,2, M.burgundy, totalW/2,ffB+0.9,hallZ+wallT+8, g);
+  box(5,0.7,0.5, M.burgundy, totalW/2,ffB+2.2,hallZ+wallT+7.1, g);
+  // Armchair
+  box(2.2,1.8,2, M.burgundy, wallT+2,ffB+0.9,hallZ+wallT+10, g);
+  box(2.2,0.7,0.5, M.burgundy, wallT+2,ffB+2.2,hallZ+wallT+9.1, g);
+  // Study desk
+  box(3,0.15,1.5, M.wood, totalW-wallT-2.5,ffB+2.5,hallEndZ-2, g);
+  box(3,2.5,0.05, M.wood, totalW-wallT-2.5,ffB+1.25,hallEndZ-1.3, g); // back panel
+  // Desk chair
+  cyl(0.4,0.4,0.15,M.dkGrey, totalW-wallT-2.5,ffB+2.5,hallEndZ-3.2, g, 12);
+  cyl(0.04,0.04,1.8,M.chrome, totalW-wallT-2.5,ffB+1.6,hallEndZ-3.2, g, 8);
+  // Bookshelf
+  box(0.4,gfH*0.9,4, M.wood, wallT+0.2,ffB+gfH*0.45,hallEndZ-3, g);
+  for(let i=0;i<5;i++){
+    box(0.35,0.12,3.8, M.dkWood, wallT+0.2,ffB+1+i*1.4,hallEndZ-3, g);
+  }
+  // Book spines
+  [[0.4,0x5577aa],[0.6,0xaa4433],[0.5,0x448833],[0.7,0xaa8822]].forEach(([bw,col],i)=>{
+    box(bw,1.1,0.3, mat(col), wallT+0.2, ffB+1.6+i*1.4, hallEndZ-3+i*0.3, g);
   });
 
-  // Exterior wall lights (entry)
-  box(.3,.3,.3,M.gold, 1.8,D.gfH-.5,.05,extG);
-  box(.3,.3,.3,M.gold, tw-1.8,D.gfH-.5,.05,extG);
-  const el1=new THREE.PointLight(0xffcc44,3,10);
-  el1.position.set(1.8,D.gfH-.5,.6); extG.add(el1);
-  const el2=new THREE.PointLight(0xffcc44,3,10);
-  el2.position.set(tw-1.8,D.gfH-.5,.6); extG.add(el2);
+  // FF BEDROOM
+  box(toiletX-wallT,ffH,0.05, M.accentTerra, (wallT+toiletX)/2,ffB+ffH/2,hallEndZ+wallT+0.025, ffG);
+  // Platform bed (lower, teak)
+  box(5,0.5,(totalL-hallEndZ)*0.55, M.wood, (wallT+toiletX)/2,ffB+0.25,hallEndZ+wallT+4, g);
+  box(5.1,1.2,0.6, M.wood, (wallT+toiletX)/2,ffB+0.85,hallEndZ+wallT+1.7, g); // headboard
+  box(5,0.4,4, M.offWhite, (wallT+toiletX)/2,ffB+0.75,hallEndZ+wallT+4, g); // mattress
+  box(5,0.15,1.5, M.blue, (wallT+toiletX)/2,ffB+0.97,hallEndZ+wallT+5, g); // blanket
+  // FF Wardrobe
+  box(0.6,ffH,5, M.wood, toiletX-wallT-0.3,ffB+ffH/2,hallEndZ+wallT+5, g);
+  // Study desk (FF bedroom)
+  box(3,0.12,1.5, M.dkWood, wallT+2,ffB+2.5,totalL-wallT-2, g);
+  box(3,2.5,0.05, M.dkWood, wallT+2,ffB+1.25,totalL-wallT-1.3, g);
 
-  // Trees
-  addTree(-8,-6); addTree(cx+12,-6);
-  addTree(-8,50); addTree(cx+12,50);
+  // FF Bathroom (same layout as GF, same zone)
+  const ffbx1=toiletX+wallT, ffbx2=totalW-wallT;
+  const ffbz1=hallEndZ+wallT, ffbz2=totalL-wallT;
+  const ffcx=(ffbx1+ffbx2)/2, ffcz=(ffbz1+ffbz2)/2;
+  const ffbW=ffbx2-ffbx1, ffbL=ffbz2-ffbz1;
+  box(ffbW,ffH,0.05, M.whiteTile, ffcx,ffB+ffH/2,ffbz1+0.03, ffG);
+  box(ffbW,ffH,0.05, M.whiteTile, ffcx,ffB+ffH/2,ffbz2-0.03, ffG);
+  box(0.05,ffH,ffbL, M.whiteTile, ffbx1+0.03,ffB+ffH/2,ffcz, ffG);
+  box(ffbW,0.05,ffbL, M.mosaicTile, ffcx,ffB+0.03,ffcz, ffG);
+  // Vanity
+  box(2.2,2,0.8, mat(0x606060,{roughness:0.6}), ffcx,ffB+1,ffbz1+0.7, g);
+  box(2.2,0.1,0.8, M.ltCounter, ffcx,ffB+2.06,ffbz1+0.7, g);
+  box(0.04,0.4,0.04, M.chrome, ffcx,ffB+2.4,ffbz1+0.5, g);
+  // Shower
+  box(0.05,ffH*0.85,2, M.frostGlass, ffbx2-0.1,ffB+ffH*0.425,ffbz1+2.3, g);
+  box(2.5,0.05,2, M.ggFloor, ffbx2-1.25,ffB+0.03,ffbz1+2.3, g);
+  box(0.6,0.06,0.6, M.chrome, ffbx2-1.5,ffB+ffH*0.8,ffbz1+2.3, g);
+}
 
-  // Fountain near gate (centre of front garden)
-  cyl(2.5,2.5,.4,M.pillar,   cx,  .2,  -9,extG,24);   // basin rim
-  cyl(2.2,2.2,.3,M.ggTrim,   cx,  .35, -9,extG,24);   // basin interior
-  cyl(.18,.22,3,M.pillar,    cx,  1.5, -9,extG,12);   // central column
-  cyl(.5,.4,.2,M.ggTrim,     cx,  3.1, -9,extG,16);   // top bowl
-  const waterMat=new THREE.MeshStandardMaterial({color:0x44aacc,transparent:true,opacity:.6,roughness:.05});
-  cyl(2.1,2.1,.1,waterMat,   cx,  .46, -9,extG,24);   // water surface
-  cyl(.28,.28,.45,waterMat,  cx,  2.3, -9,extG,10);   // water column effect
-  const fLight=new THREE.PointLight(0x44ccff,2.5,6);
-  fLight.position.set(cx,.5,-9); extG.add(fLight);
+/* ════════════════════════════════════════════════
+   EXTERIOR / SITE
+   ════════════════════════════════════════════════ */
+function buildExterior() {
+  const g=extG;
+  // Ground plane (grass)
+  box(80,0.1,120, M.grass, 40,-0.05,40, g);
 
-  // Flower beds along pathway (both sides)
-  const flowerColors=[0xff4466,0xff8800,0xffdd00,0xff66aa,0xcc44ff];
+  // Compound wall (front)
+  box(30,2.5,0.6, M.cpndWall, 15,-0.5+1.25,-8, g);
+  // Granite pillars at compound gate
+  box(1.2,3,1.2, M.ggTrim, 8,1.5,-8, g);
+  box(1.2,3,1.2, M.ggTrim, 22,1.5,-8, g);
+  // Gate (horizontal steel bars)
+  for(let y=0;y<3;y++){
+    box(12,0.12,0.1, M.chrome, 15,0.5+y*0.8,-8, g);
+  }
+  box(0.15,3.5,0.15, M.chrome, 9.5,1.75,-8, g);
+  box(0.15,3.5,0.15, M.chrome, 20.5,1.75,-8, g);
+
+  // Compound side walls
+  box(0.6,2.5,20, M.cpndWall, -0.3,1.25,-8+10, g);
+  box(0.6,2.5,20, M.cpndWall, 30.3,1.25,-8+10, g);
+  // Granite coping top
+  box(30,0.2,0.7, M.ggTrim, 15,2.5,-8, g);
+  box(0.7,0.2,20, M.ggTrim, -0.35,2.5,-8+10, g);
+  box(0.7,0.2,20, M.ggTrim, 30.35,2.5,-8+10, g);
+
+  // Pathway (granite slabs with grass joints)
+  for(let i=0;i<6;i++){
+    box(2.5,0.12,2, M.path, totalW/2,-0.02,-2-i*3, g);
+    box(2.5,0.05,0.8, M.grass, totalW/2,-0.02,-1.1-i*3, g);
+  }
+
+  // Flower beds along pathway
+  box(1,0.3,8, mat(0x3a5a2a,{roughness:1}), totalW/2-2.2,-0.05,-6, g);
+  box(1,0.3,8, mat(0x3a5a2a,{roughness:1}), totalW/2+2.2,-0.05,-6, g);
+  // Flowers
+  const flowerCols=[0xff4466,0xffaa22,0xff6699,0xffdd22,0xee4444];
+  for(let i=0;i<12;i++){
+    sph(0.18,mat(flowerCols[i%5],{roughness:0.9}), totalW/2-2.2+Math.sin(i)*0.3,0.2,-2-i*0.6, g);
+    sph(0.18,mat(flowerCols[(i+2)%5],{roughness:0.9}), totalW/2+2.2+Math.cos(i)*0.3,0.2,-2-i*0.6, g);
+  }
+
+  // Flower beds along front facade
+  box(14,0.3,1.5, mat(0x3a5a2a,{roughness:1}), totalW/2,0,-1, g);
   for(let i=0;i<8;i++){
-    const fz=-3+i*1.2;
-    // Left bed
-    box(.8,.25,1,new THREE.MeshStandardMaterial({color:0x3a6a1a,roughness:.9}), cx-3.5,.125,fz,extG);
-    sph(.25,new THREE.MeshStandardMaterial({color:flowerColors[i%5]}),         cx-3.5,.5,fz,extG);
-    // Right bed
-    box(.8,.25,1,new THREE.MeshStandardMaterial({color:0x3a6a1a,roughness:.9}), cx+3.5,.125,fz,extG);
-    sph(.25,new THREE.MeshStandardMaterial({color:flowerColors[(i+2)%5]}),      cx+3.5,.5,fz,extG);
+    sph(0.2,mat(flowerCols[i%5],{roughness:0.9}), 2+i*1.6,0.22,-1.2, g);
   }
 
-  // Flower border along left & right compound walls
-  for(let z=5;z<40;z+=4){
-    sph(.4,new THREE.MeshStandardMaterial({color:flowerColors[Math.floor(z/4)%5]}), cx-11, .5,z,extG);
-    sph(.4,new THREE.MeshStandardMaterial({color:flowerColors[Math.floor(z/3)%5]}), cx+11, .5,z,extG);
-    box(1,.3,1,new THREE.MeshStandardMaterial({color:0x2d5a1a,roughness:.9}),       cx-11,.15,z,extG);
-    box(1,.3,1,new THREE.MeshStandardMaterial({color:0x2d5a1a,roughness:.9}),       cx+11,.15,z,extG);
-  }
-
-  // GF cornice band (horizontal)
-  box(tw+.1,.35,D.wt,M.ggTrim, cx,D.gfH+D.slabT+.17,.35,extG);
-  box(tw+.1,.35,D.wt,M.ggTrim, cx,D.gfH+D.slabT+.17,tl-.35,extG);
-  box(D.wt,.35,tl+.1,M.ggTrim, .35,D.gfH+D.slabT+.17,tl/2,extG);
-  box(D.wt,.35,tl+.1,M.ggTrim, tw-.35,D.gfH+D.slabT+.17,tl/2,extG);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FRONT ELEVATION DETAILS
-// ─────────────────────────────────────────────────────────────────────────────
-function buildFrontElevation(){
-  const cx=D.cx, tw=D.tw;
-  // Sunshade / chajja over main door (lapotea slab)
-  box(tw*.5,.2,.9,M.lap, cx,D.gfH*.62,.6,gfG);
-  // Lintel band over windows GF
-  box(2.6,.2,.12,M.ggTrim, 2.2,5.5+3.5/2+.1,D.wt/2+.04,gfG);
-  box(2.6,.2,.12,M.ggTrim, tw-2.2,5.5+3.5/2+.1,D.wt/2+.04,gfG);
-  // Sill below windows GF
-  box(2.6,.2,.2,M.lap, 2.2,5.5-3.5/2-.1,D.wt/2+.04,gfG);
-  box(2.6,.2,.2,M.lap, tw-2.2,5.5-3.5/2-.1,D.wt/2+.04,gfG);
-  // Lintel FF windows
-  const ffBase=GFT;
-  box(3.4,.2,.12,M.ggTrim, cx-4,ffBase+5+4/2+.1,D.wt/2+.04,ffG);
-  box(3.4,.2,.12,M.ggTrim, cx+4,ffBase+5+4/2+.1,D.wt/2+.04,ffG);
-  box(3.4,.18,.2,M.lap, cx-4,ffBase+5-4/2-.08,D.wt/2+.04,ffG);
-  box(3.4,.18,.2,M.lap, cx+4,ffBase+5-4/2-.08,D.wt/2+.04,ffG);
-  // Decorative horizontal band on front wall at mid-height GF
-  box(tw,.18,.1,M.ggTrim, cx,D.gfH*.5,D.wt/2+.05,gfG);
-  // Decorative band FF
-  box(tw,.18,.1,M.ggTrim, cx,GFT+D.ffH*.5,D.wt/2+.05,ffG);
-  // House name plate above door
-  box(2.4,.5,.1,M.ggTrim,cx,D.gfH*.75,D.wt/2+.05,gfG);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DINING AREA (GF, between kitchen & hall ~ z=14..20)
-// ─────────────────────────────────────────────────────────────────────────────
-function buildDining(grp,yBase=0){
-  const cx=D.cx+1, cz=D.staEndZ+4; // dining zone centre
-  // Table (6-seater, galaxy granite top)
-  box(5.5,.12,3,M.ggTrim, cx,yBase+2.65,cz,grp);
-  box(5.5,.08,3,M.wood,   cx,yBase+2.5, cz,grp);
-  // Table legs
-  [[-2.3,-1.2],[2.3,-1.2],[-2.3,1.2],[2.3,1.2]].forEach(([dx,dz])=>{
-    cyl(.06,.06,2.5,M.metal,cx+dx,yBase+1.25,cz+dz,grp,8);
+  // 4 Trees (layered foliage spheres)
+  const treePosns=[[-8,totalL*0.3],[-8,totalL*0.7],[30,totalL*0.2],[30,totalL*0.75]];
+  const tMat1=mat(0x2a7a30,{roughness:0.9});
+  const tMat2=mat(0x1f6625,{roughness:0.9});
+  treePosns.forEach(([tx,tz])=>{
+    cyl(0.25,0.4,7, M.dkWood, tx,3.5,tz, g);
+    sph(2.2,tMat1, tx,7.5,tz, g);
+    sph(1.8,tMat2, tx+0.7,6.5,tz+0.5, g);
+    sph(1.5,tMat1, tx-0.5,8.5,tz-0.4, g);
+    sph(1.2,tMat2, tx+0.3,9.5,tz, g);
   });
-  // Chairs (6)
-  const chairPos=[[-3.6,0],[-1.2,-2.2],[1.2,-2.2],[-1.2,2.2],[1.2,2.2],[3.6,0]];
-  chairPos.forEach(([dx,dz])=>{
-    const facing = dz<-1 ? 0 : dz>1 ? Math.PI : dx<0 ? Math.PI/2 : -Math.PI/2;
-    box(1.6,1.4,1.6,M.wood,cx+dx,yBase+.7,cz+dz,grp);
-    box(1.6,1.8,.18,M.wood,cx+dx,yBase+1.8,cz+dz+(dz<-1?-.9:dz>1?.9:dx<0?-.9:.9),grp);
-  });
-  // Pendant light above table (parented to scene, not furnG, so it persists when furniture is hidden)
-  cyl(.04,.04,1.8,M.metal,cx,yBase+D.gfH-.9,cz,grp,8);
-  cyl(.35,.25,.3,M.gold,  cx,yBase+D.gfH-2,cz,grp,16);
-  const dl=new THREE.PointLight(0xffe8cc,3,8);
-  dl.position.set(cx,yBase+D.gfH-2.2,cz); scene.add(dl); iLights.push(dl);
-  // Decorative bowl on table
-  cyl(.4,.5,.25,M.ggTrim,cx,yBase+2.78,cz,grp,16);
-  sph(.3,M.red,cx,yBase+2.9,cz,grp);
-}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HANGING CEILING LIGHTS
-// ─────────────────────────────────────────────────────────────────────────────
-function addPendant(x,y,z,grp=gfG){
-  cyl(.03,.03,1.2,M.metal,x,y-.6,z,grp,8);
-  cyl(.4,.3,.35,M.gold,x,y-1.35,z,grp,16);
-  // Light added to scene so it survives furniture toggle
-  const pl=new THREE.PointLight(0xfff5cc,2.5,10);
-  pl.position.set(x,y-1.6,z); scene.add(pl); iLights.push(pl);
-}
+  // Fountain (tiered, with cyan glow)
+  cyl(2.5,2.8,0.4,M.ggTrim, -5,0.2,totalL*0.5, g);
+  cyl(1.8,2.0,0.3,M.ggTrim, -5,0.6,totalL*0.5, g);
+  cyl(0.5,0.8,0.25,M.ggTrim, -5,0.9,totalL*0.5, g);
+  cyl(0.1,0.1,1.2,M.chrome, -5,1.25,totalL*0.5, g); // spout
+  // Water (blue transparent disc)
+  cyl(2.3,2.3,0.05,mat(0x66aaee,{transparent:true,opacity:0.6}), -5,0.42,totalL*0.5, g);
+  cyl(1.6,1.6,0.05,mat(0x88bbff,{transparent:true,opacity:0.6}), -5,0.72,totalL*0.5, g);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CURTAINS (thin fabric panels on interior side of windows)
-// ─────────────────────────────────────────────────────────────────────────────
-// inDir: +1 = interior is in +x direction (left wall), -1 = interior is in -x direction (right wall)
-function addCurtain(grp,cx,cy,cz,w,h,axis,col=0xf5e6d3,inDir=1){
-  const mat=new THREE.MeshStandardMaterial({color:col,roughness:.9,side:THREE.DoubleSide,transparent:true,opacity:.85});
-  const off=.22*inDir;
-  if(axis==='x'){
-    box(w/2-.1,h,.08,mat,cx-w/4,cy,cz+Math.abs(off),grp);
-    box(w/2-.1,h,.08,mat,cx+w/4,cy,cz+Math.abs(off),grp);
-    box(w+.4,.06,.06,M.gold,cx,cy+h/2+.08,cz+Math.abs(off),grp);
-  } else {
-    box(.08,h,w/2-.1,mat,cx+off,cy,cz-w/4,grp);
-    box(.08,h,w/2-.1,mat,cx+off,cy,cz+w/4,grp);
-    box(.06,.06,w+.4,M.gold,cx+off,cy+h/2+.08,cz,grp);
-  }
-}
+  // Car porch slab (right side of house)
+  box(10,0.2,16, M.slab, totalW+5,0.1,10, g);
+  // Porch columns
+  cyl(0.3,0.3,gfH,M.pillar, totalW+0.5,gfH/2,2, g);
+  cyl(0.3,0.3,gfH,M.pillar, totalW+9.5,gfH/2,2, g);
+  cyl(0.3,0.3,gfH,M.pillar, totalW+0.5,gfH/2,16, g);
+  cyl(0.3,0.3,gfH,M.pillar, totalW+9.5,gfH/2,16, g);
+  // Porch slab roof
+  box(10,0.3,16, M.slab, totalW+5,gfH+0.15,10, g);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POTTED PLANTS (indoor)
-// ─────────────────────────────────────────────────────────────────────────────
-function addPlant(x,y,z,grp=gfG,scale=1){
-  cyl(.18*scale,.22*scale,.4*scale,M.ggTrim,x,y+.2*scale,z,grp,10); // pot
-  cyl(.08*scale,.1*scale,.3*scale,M.green,x,y+.55*scale,z,grp,8);   // stem
-  sph(.35*scale,M.treeLeaf,x,y+.9*scale,z,grp);
-  sph(.22*scale,M.treeLeaf,x+.2*scale,y+.8*scale,z-.1*scale,grp);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CAR (driveway)
-// ─────────────────────────────────────────────────────────────────────────────
-function addCar(x,z,grp=extG){
-  const carMat=new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.6});
-  const glassMat=new THREE.MeshStandardMaterial({color:0x88aacc,transparent:true,opacity:.5,roughness:.05});
-  const tyreMat=new THREE.MeshStandardMaterial({color:0x111111,roughness:.9});
-  // Body
-  box(7.5,1.5,3.2,carMat,x,.75,z,grp);
-  // Cabin/roof
-  box(4.5,1.2,3,carMat,x-.2,1.95,z,grp);
-  // Windscreens
-  box(4.5,.04,3,glassMat,x-.2,1.95,z,grp);
-  // Side windows
-  box(.06,1,2.8,glassMat,x+1.8,1.95,z,grp);
-  box(.06,1,2.8,glassMat,x-2.2,1.95,z,grp);
-  // Wheels (dx=fore-aft offset, dz=side offset)
-  [[-2.8,-1.65],[-2.8,1.65],[2.8,-1.65],[2.8,1.65]].forEach(([dx,dz])=>{
-    cyl(.55,.55,.35,M.metal,x+dx,.55,z+dz,grp,16);
-    cyl(.38,.38,.38,tyreMat, x+dx,.55,z+dz,grp,16);
+  // Parked car (simple block representation)
+  box(6.5,3.5,11, mat(0x2244aa,{roughness:0.3,metalness:0.5}), totalW+5,1.75+0.1,10, g);
+  box(5,2,7, mat(0x4466cc,{roughness:0.1,metalness:0.4}), totalW+5,2.8+0.1,10.5, g); // cabin
+  // Wheels
+  [[totalW+2.3,0.6,4],[totalW+7.7,0.6,4],[totalW+2.3,0.6,16],[totalW+7.7,0.6,16]].forEach(([wx,wy,wz])=>{
+    cyl(0.8,0.8,0.6,mat(0x111111), wx,wy,wz, g, 16);
+    cyl(0.4,0.4,0.65,M.chrome, wx,wy,wz, g, 16);
   });
   // Headlights
-  const hlMat=new THREE.MeshStandardMaterial({color:0xffffdd,emissive:0xffff88,emissiveIntensity:.6});
-  box(.08,.3,.5,hlMat,x+3.78,.9,z-1.1,grp);
-  box(.08,.3,.5,hlMat,x+3.78,.9,z+1.1,grp);
-  // Rear lights
-  const rlMat=new THREE.MeshStandardMaterial({color:0xff2222,emissive:0xff0000,emissiveIntensity:.4});
-  box(.08,.25,.45,rlMat,x-3.78,.9,z-1.1,grp);
-  box(.08,.25,.45,rlMat,x-3.78,.9,z+1.1,grp);
+  box(0.5,0.4,0.1, mat(0xffffcc,{emissive:0xffffcc,emissiveIntensity:0.5}), totalW+3.5,1.8,4.45, g);
+  box(0.5,0.4,0.1, mat(0xffffcc,{emissive:0xffffcc,emissiveIntensity:0.5}), totalW+6.5,1.8,4.45, g);
+
+  // Exterior wall sconces (at entry, both sides of door)
+  box(0.15,0.6,0.5, M.amber, totalW/2-2.8,6.5,-0.01, extG);
+  box(0.15,0.6,0.5, M.amber, totalW/2+2.8,6.5,-0.01, extG);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TERRACE FEATURES (on FF slab)
-// ─────────────────────────────────────────────────────────────────────────────
-function buildTerrace(){
-  const base=GFT+D.ffH+D.slabT;
-  const cx=D.cx, tl=D.tl, tw=D.tw, wt=D.wt;
-  const terrMat=new THREE.MeshStandardMaterial({color:0xc8c0b8,roughness:.5});
-  // Terrace floor (polished concrete)
-  box(tw-2*wt,.08,tl-2*wt,terrMat, cx,base+.04,tl/2,ffG);
-  // Terrace chairs (seating zone at back)
-  [[4,tl-10],[4,tl-14],[tw-4,tl-10],[tw-4,tl-14]].forEach(([x,z])=>{
-    box(1.5,1.2,1.5,M.red, x,base+.6,z,ffG);
-    box(1.5,1.8,.2,M.red,  x,base+1.5,z+.85,ffG);
-  });
-  // Small terrace table
-  box(2.5,.12,2.5,M.ggTrim, cx,base+1.6,tl-12,ffG);
-  cyl(.06,.06,1.6,M.metal,  cx,base+.8, tl-12,ffG,8);
-  // Garden pots on parapet corners
-  [[2,wt+.4],[tw-2,wt+.4],[2,tl-wt-.4],[tw-2,tl-wt-.4]].forEach(([x,z])=>{
-    cyl(.3,.35,.4,M.ggTrim, x,base+D.para+.2,z,ffG,12);
-    sph(.35,M.treeLeaf,     x,base+D.para+.65,z,ffG);
-  });
-  // Clothesline poles + wire
-  cyl(.06,.06,3,M.metal, 3,      base+D.para+1.5,tl-5,ffG,8);
-  cyl(.06,.06,3,M.metal, tw-3,   base+D.para+1.5,tl-5,ffG,8);
-  box(.04,.04,tw-6,M.metal, cx,  base+D.para+3,  tl-5,ffG);
-  // Solar panels (decorative slabs angled on roof)
-  box(4,.06,3,new THREE.MeshStandardMaterial({color:0x1a2a4a,metalness:.4,roughness:.2}),
-      cx,base+D.para+.3,tl-8,ffG,0.25,0,0);
+/* ════════════════════════════════════════════════
+   LIGHTING
+   ════════════════════════════════════════════════ */
+const ambientLight = new THREE.AmbientLight(0xfff5e0, 0.4);
+scene.add(ambientLight);
+
+const sunLight = new THREE.DirectionalLight(0xfffbe8, 1.5);
+sunLight.position.set(25,35,20);
+sunLight.castShadow = true;
+sunLight.shadow.mapSize.set(2048,2048);
+sunLight.shadow.camera.left=-60; sunLight.shadow.camera.right=60;
+sunLight.shadow.camera.top=80; sunLight.shadow.camera.bottom=-20;
+sunLight.shadow.camera.near=1; sunLight.shadow.camera.far=200;
+sunLight.shadow.bias=-0.002;
+scene.add(sunLight);
+
+const hemiLight = new THREE.HemisphereLight(0x87CEEB, 0x8B7355, 0.5);
+scene.add(hemiLight);
+
+const moonLight = new THREE.DirectionalLight(0x4466aa, 0.3);
+moonLight.position.set(-20,30,-15);
+moonLight.visible = false;
+scene.add(moonLight);
+
+// Interior room lights
+const intLights = [];
+function addIntLight(x,y,z,col=0xffedd0,intensity=2.0,range=12) {
+  const l=new THREE.PointLight(col,intensity,range);
+  l.position.set(x,y,z);
+  l.castShadow=false;
+  scene.add(l);
+  intLights.push(l);
+  return l;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ASSEMBLE
-// ─────────────────────────────────────────────────────────────────────────────
-buildGF();
-buildFF();
-buildExt();
-buildFrontElevation();
+// GF rooms
+addIntLight(totalW/2, gfH-1.5, (hallZ+hallEndZ)/2, 0xffedd0, 2.0, 14); // hall
+addIntLight(totalW/2, gfH-1.5, hallZ/2, 0xfff5e0, 1.8, 12); // kitchen
+addIntLight((wallT+toiletX)/2, gfH-1.5, (hallEndZ+totalL)/2, 0xffedd0, 1.8, 12); // bedroom
+addIntLight((toiletX+totalW)/2, gfH-1.5, (hallEndZ+totalL)/2, 0xfff8f8, 1.5, 8); // bathroom
 
-// --- Extra details added after base build ---
+// FF rooms
+const ffB=gfH+slabT;
+addIntLight(totalW/2, ffB+ffH-1.5, (hallZ+hallEndZ)/2, 0xffedd0, 1.8, 12);
+addIntLight((wallT+toiletX)/2, ffB+ffH-1.5, (hallEndZ+totalL)/2, 0xffedd0, 1.8, 12);
 
-// Dining table (GF hall zone)
-buildDining(furnG);
+// Pendant lights (GF hall)
+addIntLight(totalW/2-2.5, gfH-1.3, hallZ+wallT+6, 0xffeedd, 1.2, 6);
+addIntLight(totalW/2+2.5, gfH-1.3, hallZ+wallT+6, 0xffeedd, 1.2, 6);
 
-// Pendant lights – hall (GF & FF)
-addPendant(D.cx,D.gfH,22,gfG);
-addPendant(D.cx-3,D.gfH,17,gfG);
-addPendant(D.cx+3,D.gfH,17,gfG);
-addPendant(D.cx,GFT+D.ffH,22,ffG);
+// Kitchen peninsula pendant
+addIntLight(4.5, gfH-1.5, hallZ-1.5, 0xfff5e0, 1.0, 5);
 
-// Curtains – GF side windows (left wall inDir=+1, right wall inDir=-1)
-addCurtain(gfG, D.wt/2,      4.8, 22, 2.5, 3.5,'z',0xf5e6d3, 1);
-addCurtain(gfG, D.wt/2,      4.8, 36, 2.5, 3.5,'z',0xe8d5c0, 1);
-addCurtain(gfG, D.tw-D.wt/2, 4.8, 22, 2.5, 3.5,'z',0xf0ddc8,-1);
-addCurtain(gfG, D.tw-D.wt/2, 4.8, 36, 2.5, 3.5,'z',0xf5e6d3,-1);
+// Exterior sconces
+addIntLight(totalW/2-2.8, 6.5, -1, 0xffcc44, 1.5, 8);
+addIntLight(totalW/2+2.8, 6.5, -1, 0xffcc44, 1.5, 8);
 
-// Indoor plants – corners of hall & bedroom
-addPlant(D.wt+.6, 0, D.staEndZ+.8, furnG, 1.1);
-addPlant(D.tw-D.wt-.8, 0, D.staEndZ+.8, furnG, 1.0);
-addPlant(D.wt+.6, 0, D.hallEndZ-.8, furnG, 1.2);
+// Fountain glow
+const fountainLight = new THREE.PointLight(0x44ccff, 1.5, 6);
+fountainLight.position.set(-5, 1, totalL*0.5);
+scene.add(fountainLight);
 
-// Car in driveway
-addCar(D.cx+13, 8, extG);
+/* ════════════════════════════════════════════════
+   SKY + STARS
+   ════════════════════════════════════════════════ */
+const skyDome = new THREE.Mesh(
+  new THREE.SphereGeometry(280,32,16),
+  M.skyDay
+);
+scene.add(skyDome);
 
-// Terrace furniture & features
-buildTerrace();
+// Stars (hidden by default)
+const starGeo = new THREE.BufferGeometry();
+const starVerts = [];
+for(let i=0;i<2000;i++){
+  const theta=Math.random()*Math.PI*2;
+  const phi=Math.acos(2*Math.random()-1);
+  const r=270;
+  starVerts.push(r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta));
+}
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVerts,3));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({color:0xffffff,size:0.8}));
+stars.visible = false;
+scene.add(stars);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// VIEW PRESETS
-// ─────────────────────────────────────────────────────────────────────────────
-const views={
-  ext:  {pos:[38,26,50],  tgt:[7.75,8,22]},
-  elev: {pos:[7.75,12,-18],tgt:[7.75,8,0]},
-  gf:   {pos:[7.75,8,16], tgt:[7.75,5,32]},
-  ff:   {pos:[7.75,GFT+8,16],tgt:[7.75,GFT+5,32]},
-  cut:  {pos:[-12,15,30], tgt:[7.75,8,22]},
-  top:  {pos:[7.75,55,22],tgt:[7.75,0,22]},
+// Moon mesh
+const moonMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(4,12,8),
+  mat(0xeeeedd,{emissive:0xddddcc,emissiveIntensity:0.5})
+);
+moonMesh.position.set(-100, 120, -80);
+moonMesh.visible = false;
+scene.add(moonMesh);
+
+/* ════════════════════════════════════════════════
+   BUILD EVERYTHING
+   ════════════════════════════════════════════════ */
+buildGFShell();
+buildFFShell();
+buildPillars();
+buildOpenings();
+buildBalcony();
+buildStairs();
+buildGFHall();
+buildGFKitchen();
+buildGFBedroom();
+buildGFBath();
+buildFFInteriors();
+buildExterior();
+
+/* ════════════════════════════════════════════════
+   VIEW PRESETS
+   ════════════════════════════════════════════════ */
+const VIEWS = {
+  ext:  {cam:[38,26,50],  tgt:[7.75,8,22]},
+  elev: {cam:[7.75,12,-20],tgt:[7.75,8,0]},
+  gf:   {cam:[7.75,8,14], tgt:[7.75,5,30]},
+  ff:   {cam:[7.75,21,14],tgt:[7.75,18,30]},
+  cut:  {cam:[-10,15,28], tgt:[7.75,8,22]},
+  top:  {cam:[7.75,55,22],tgt:[7.75,0,22]},
 };
 
-// Collapse / expand panel
-let panelOpen=true;
-function togglePanel(){
-  panelOpen=!panelOpen;
-  document.getElementById('panel-body').classList.toggle('collapsed',!panelOpen);
-  document.getElementById('toggle-arrow').textContent=panelOpen?'▲':'▼';
-}
-
-// Show correct hint for device type
-if('ontouchstart' in window){
-  document.getElementById('hint-desk').style.display='none';
-  document.getElementById('hint-mob').style.display='inline';
-  // Auto-collapse panel on phones so it doesn't block the view
-  if(window.innerWidth<480) togglePanel();
-}
-
-function setView(k){
-  const v=views[k]; if(!v) return;
-  camera.position.set(...v.pos);
+function gotoView(name) {
+  const v=VIEWS[name]; if(!v) return;
+  camera.position.set(...v.cam);
   controls.target.set(...v.tgt);
   controls.update();
-  document.querySelectorAll('#ui .btn').forEach(b=>b.classList.remove('on'));
-  event && event.target && event.target.classList && event.target.classList.add('on');
 }
 
-function showFloors(f){
-  gfG.visible = f!=='ff';
-  ffG.visible = f!=='gf';
+/* ════════════════════════════════════════════════
+   TOGGLE FUNCTIONS
+   ════════════════════════════════════════════════ */
+const state = {gf:true, ff:true, ext:true, furn:true, lights:true, night:false};
+
+function toggleGroup(name) {
+  state[name] = !state[name];
+  const grp = name==='gf'?gfG : name==='ff'?ffG : extG;
+  grp.visible = state[name];
+  document.getElementById('btn-'+name).classList.toggle('on', state[name]);
 }
 
-const states={furn:true,light:true,ext_el:true};
-function toggle(k){
-  states[k]=!states[k];
-  const btn=document.getElementById('btn'+k[0].toUpperCase()+k.slice(1));
-  if(btn) btn.classList.toggle('on',states[k]);
-  if(k==='furn') furnG.visible=states[k];
-  if(k==='light') iLights.forEach(l=>l.visible=states[k]);
-  if(k==='ext_el') extG.visible=states[k];
+function toggleFurn() {
+  state.furn = !state.furn;
+  furnG.visible = state.furn;
+  document.getElementById('btn-furn').classList.toggle('on', state.furn);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RENDER LOOP
-// ─────────────────────────────────────────────────────────────────────────────
-(function animate(){
+function toggleLights() {
+  state.lights = !state.lights;
+  intLights.forEach(l => l.visible = state.lights);
+  document.getElementById('btn-lights').classList.toggle('on', state.lights);
+}
+
+function toggleNight() {
+  state.night = !state.night;
+  document.getElementById('btn-night').classList.toggle('on', state.night);
+  if(state.night) {
+    skyDome.material = M.skyNight;
+    scene.fog.color.setHex(0x05050f);
+    scene.background = new THREE.Color(0x05050f);
+    ambientLight.intensity = 0.08;
+    sunLight.visible = false;
+    hemiLight.intensity = 0.05;
+    moonLight.visible = true;
+    stars.visible = true;
+    moonMesh.visible = true;
+    fountainLight.intensity = 2.5;
+    intLights.forEach(l => { l.intensity *= 1.5; });
+  } else {
+    skyDome.material = M.skyDay;
+    scene.fog.color.setHex(0x87CEEB);
+    scene.background = null;
+    ambientLight.intensity = 0.4;
+    sunLight.visible = true;
+    hemiLight.intensity = 0.5;
+    moonLight.visible = false;
+    stars.visible = false;
+    moonMesh.visible = false;
+    fountainLight.intensity = 1.5;
+    intLights.forEach(l => { l.intensity /= 1.5; });
+  }
+}
+
+function resetCamera() {
+  gotoView('ext');
+}
+
+function togglePanel() {
+  const body = document.getElementById('panel-body');
+  const arrow = document.getElementById('toggle-arrow');
+  body.classList.toggle('collapsed');
+  arrow.textContent = body.classList.contains('collapsed') ? '▼' : '▲';
+}
+
+// Auto-collapse on mobile
+if(window.innerWidth < 480) {
+  document.getElementById('panel-body').classList.add('collapsed');
+  document.getElementById('toggle-arrow').textContent = '▼';
+}
+
+// Touch vs mouse hint
+if('ontouchstart' in window) {
+  document.getElementById('hint').textContent = 'Drag to orbit · Pinch to zoom · 2-finger pan';
+}
+
+/* ════════════════════════════════════════════════
+   RESIZE + RENDER LOOP
+   ════════════════════════════════════════════════ */
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+});
+
+function animate() {
   requestAnimationFrame(animate);
   controls.update();
-  renderer.render(scene,camera);
-})();
-
-window.addEventListener('resize',()=>{
-  camera.aspect=innerWidth/innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth,innerHeight);
-});
+  // Gentle fountain light pulse
+  fountainLight.intensity = 1.5 + Math.sin(Date.now()*0.002)*0.3;
+  renderer.render(scene, camera);
+}
+animate();
 </script>
 </body>
 </html>
