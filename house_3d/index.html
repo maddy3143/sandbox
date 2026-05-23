@@ -6,53 +6,81 @@
 <title>3D House Model – 2-Floor Residence</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;background:#87CEEB;}
+  body{overflow:hidden;font-family:'Segoe UI',Arial,sans-serif;background:#87CEEB;touch-action:none;}
   canvas{display:block;}
-  #ui{position:fixed;top:14px;left:14px;z-index:10;width:200px;}
-  #panel{background:rgba(10,12,28,.88);backdrop-filter:blur(12px);color:#fff;border-radius:12px;border:1px solid rgba(255,255,255,.15);padding:14px;}
-  #panel h2{font-size:13px;font-weight:700;color:#FFD700;margin-bottom:2px;letter-spacing:.8px;}
-  #panel p{font-size:10px;color:#aaa;margin-bottom:10px;}
+
+  /* ── Panel ── */
+  #ui{position:fixed;top:10px;left:10px;z-index:10;width:195px;}
+  #panel{background:rgba(10,12,28,.9);backdrop-filter:blur(14px);color:#fff;border-radius:12px;border:1px solid rgba(255,255,255,.15);overflow:hidden;}
+  #panel-head{display:flex;align-items:center;justify-content:space-between;padding:11px 13px 8px;cursor:pointer;user-select:none;}
+  #panel-head h2{font-size:13px;font-weight:700;color:#FFD700;letter-spacing:.8px;margin:0;}
+  #panel-head p{font-size:9px;color:#aaa;margin:1px 0 0;}
+  #toggle-arrow{font-size:16px;color:#FFD700;transition:transform .25s;line-height:1;}
+  #panel-body{padding:0 13px 12px;transition:max-height .3s ease,opacity .3s ease;max-height:600px;opacity:1;overflow:hidden;}
+  #panel-body.collapsed{max-height:0;opacity:0;padding-bottom:0;}
   .sec{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px;}
-  .btn{display:block;width:100%;margin:3px 0;padding:7px 10px;background:rgba(255,255,255,.08);color:#ddd;border:1px solid rgba(255,255,255,.18);border-radius:6px;cursor:pointer;font-size:11px;text-align:left;transition:.18s;}
-  .btn:hover{background:rgba(255,215,0,.18);border-color:#FFD700;color:#FFD700;}
+  .btn{display:block;width:100%;margin:3px 0;padding:8px 10px;background:rgba(255,255,255,.08);color:#ddd;border:1px solid rgba(255,255,255,.18);border-radius:7px;cursor:pointer;font-size:11px;text-align:left;transition:.18s;}
+  .btn:active,.btn:hover{background:rgba(255,215,0,.2);border-color:#FFD700;color:#FFD700;}
   .btn.on{background:rgba(255,215,0,.22);border-color:#FFD700;color:#FFD700;}
-  #hint{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:rgba(255,255,255,.8);padding:6px 18px;border-radius:20px;font-size:11px;pointer-events:none;}
-  #legend{position:fixed;bottom:16px;right:16px;background:rgba(10,12,28,.82);color:#ccc;border-radius:8px;padding:10px 14px;font-size:11px;border:1px solid rgba(255,255,255,.12);}
-  #legend b{color:#FFD700;display:block;margin-bottom:4px;}
+
+  /* ── Bottom hint ── */
+  #hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:rgba(255,255,255,.8);padding:6px 16px;border-radius:20px;font-size:11px;pointer-events:none;white-space:nowrap;}
+
+  /* ── Legend ── */
+  #legend{position:fixed;bottom:14px;right:10px;background:rgba(10,12,28,.82);color:#ccc;border-radius:8px;padding:8px 12px;font-size:10px;border:1px solid rgba(255,255,255,.12);}
+  #legend b{color:#FFD700;display:block;margin-bottom:3px;font-size:10px;}
   #legend span{display:block;margin:2px 0;}
-  .dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle;}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:middle;}
+
+  /* ── Mobile overrides ── */
+  @media(max-width:480px){
+    #ui{width:calc(100vw - 20px);top:8px;left:8px;}
+    #panel-head h2{font-size:14px;}
+    .btn{padding:10px 12px;font-size:12px;margin:4px 0;}
+    #hint{font-size:10px;padding:5px 12px;bottom:10px;}
+    #legend{display:none;}        /* hide legend on small screen */
+  }
 </style>
 </head>
 <body>
 
 <div id="ui">
   <div id="panel">
-    <h2>🏠 2-FLOOR RESIDENCE</h2>
-    <p>15'6" × 44' · GF+FF</p>
+    <div id="panel-head" onclick="togglePanel()">
+      <div>
+        <h2>🏠 2-FLOOR RESIDENCE</h2>
+        <p>15'6" × 44' · GF + FF &nbsp;·&nbsp; tap to collapse</p>
+      </div>
+      <span id="toggle-arrow">▲</span>
+    </div>
+    <div id="panel-body">
+      <div class="sec">View Preset</div>
+      <button class="btn on" onclick="setView('ext')">🌅 Exterior</button>
+      <button class="btn"    onclick="setView('elev')">🏛️ Front Elevation</button>
+      <button class="btn"    onclick="setView('gf')">🛋️ GF Interior</button>
+      <button class="btn"    onclick="setView('ff')">🛏️ FF Interior</button>
+      <button class="btn"    onclick="setView('cut')">✂️ Cutaway</button>
+      <button class="btn"    onclick="setView('top')">📐 Floor Plan</button>
 
-    <div class="sec">View Preset</div>
-    <button class="btn on" onclick="setView('ext')">🌅 Exterior</button>
-    <button class="btn"    onclick="setView('elev')">🏛️ Front Elevation</button>
-    <button class="btn"    onclick="setView('gf')">🛋️ GF Interior</button>
-    <button class="btn"    onclick="setView('ff')">🛏️ FF Interior</button>
-    <button class="btn"    onclick="setView('cut')">✂️ Cutaway</button>
-    <button class="btn"    onclick="setView('top')">📐 Floor Plan</button>
+      <div class="sec">Floors</div>
+      <button class="btn on" onclick="showFloors('both')">Both Floors</button>
+      <button class="btn"    onclick="showFloors('gf')">Ground Floor</button>
+      <button class="btn"    onclick="showFloors('ff')">First Floor</button>
 
-    <div class="sec">Floors</div>
-    <button class="btn on" onclick="showFloors('both')">Both Floors</button>
-    <button class="btn"    onclick="showFloors('gf')">Ground Floor</button>
-    <button class="btn"    onclick="showFloors('ff')">First Floor</button>
-
-    <div class="sec">Toggles</div>
-    <button class="btn on" id="btnFurn"  onclick="toggle('furn')">Furniture</button>
-    <button class="btn on" id="btnLight" onclick="toggle('light')">Interior Lights</button>
-    <button class="btn on" id="btnExt"   onclick="toggle('ext_el')">Exterior</button>
-    <button class="btn on" id="btnDay"   onclick="toggleDayNight()">☀️ Day Mode</button>
-    <button class="btn"    onclick="setView('ext')">↺ Reset Camera</button>
+      <div class="sec">Toggles</div>
+      <button class="btn on" id="btnFurn"  onclick="toggle('furn')">Furniture</button>
+      <button class="btn on" id="btnLight" onclick="toggle('light')">Interior Lights</button>
+      <button class="btn on" id="btnExt"   onclick="toggle('ext_el')">Exterior</button>
+      <button class="btn on" id="btnDay"   onclick="toggleDayNight()">☀️ Day Mode</button>
+      <button class="btn"    onclick="setView('ext')">↺ Reset Camera</button>
+    </div>
   </div>
 </div>
 
-<div id="hint">🖱 Left-drag: Rotate &nbsp;|&nbsp; Right-drag: Pan &nbsp;|&nbsp; Scroll: Zoom</div>
+<div id="hint" id="hintBar">
+  <span id="hint-desk">🖱 Left-drag: Rotate &nbsp;|&nbsp; Right-drag: Pan &nbsp;|&nbsp; Scroll: Zoom</span>
+  <span id="hint-mob" style="display:none">👆 1-finger: Rotate &nbsp;|&nbsp; 2-finger: Pan &nbsp;|&nbsp; Pinch: Zoom</span>
+</div>
 
 <div id="legend">
   <b>Materials</b>
@@ -1095,6 +1123,22 @@ const views={
   cut:  {pos:[-12,15,30], tgt:[7.75,8,22]},
   top:  {pos:[7.75,55,22],tgt:[7.75,0,22]},
 };
+
+// Collapse / expand panel
+let panelOpen=true;
+function togglePanel(){
+  panelOpen=!panelOpen;
+  document.getElementById('panel-body').classList.toggle('collapsed',!panelOpen);
+  document.getElementById('toggle-arrow').textContent=panelOpen?'▲':'▼';
+}
+
+// Show correct hint for device type
+if('ontouchstart' in window){
+  document.getElementById('hint-desk').style.display='none';
+  document.getElementById('hint-mob').style.display='inline';
+  // Auto-collapse panel on phones so it doesn't block the view
+  if(window.innerWidth<480) togglePanel();
+}
 
 function setView(k){
   const v=views[k]; if(!v) return;
