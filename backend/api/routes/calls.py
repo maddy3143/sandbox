@@ -234,16 +234,17 @@ async def _process_call_recording(
             resp.raise_for_status()
             audio_bytes = resp.content
 
-        # Encrypt: XOR with a derived key (production should use AES-256-GCM)
-        # For now we store the raw bytes; real encryption is a TODO
-        s3_key = f"calls/{call_id}/recording.mp3"
-        await _s3_service.upload_image(
-            audio_bytes, s3_key, content_type="audio/mpeg"
+        # Encrypt with AES-256-GCM via EncryptedCallStorage before uploading
+        from services.storage.encrypted_call_storage import EncryptedCallStorage
+        enc_storage = EncryptedCallStorage(
+            s3_service=_s3_service,
+            encryption_key=settings.CALL_ENCRYPTION_KEY,
         )
+        s3_key = await enc_storage.store_recording(call_id, audio_bytes, "audio/mpeg")
         await _update_call_record(
             call_id,
             recording_s3_key=s3_key,
-            recording_encrypted=False,  # flip to True once encryption is applied
+            recording_encrypted=True,
             duration_seconds=recording_duration,
         )
         logger.info(
@@ -969,6 +970,21 @@ async def query_calls(
     )
 
 
+@router.post("/register-device")
+async def register_device_token(
+    token: str,
+    platform: str = "android",
+    current_user: UserContext = Depends(get_current_user),
+):
+    """Register or refresh the FCM device token for push notifications."""
+    await _fcm_service.register_device_token(
+        user_id=current_user.id,
+        device_token=token,
+        platform=platform,
+    )
+    return {"status": "registered"}
+
+
 @router.delete("/{call_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_call(
     call_id: str,
@@ -1013,13 +1029,20 @@ async def delete_call(
 
 async def _resolve_user_id_for_number(phone_number: str) -> str:
     """
-    Map an E.164 destination phone number to a user_id.
-
-    In production this would query the users table/collection.
-    For now returns a stable placeholder.
+    Map an E.164 destination phone number to a user_id by querying the
+    users collection in MongoDB. Falls back to "unknown" if not found so the
+    call is still recorded and can be claimed later.
     """
-    # TODO: replace with real DB lookup
-    return "dev_user_001"
+    try:
+        from services.database.db import get_mongo_client
+        db = get_mongo_client()
+        if db is not None:
+            user = await db["users"].find_one({"phone_number": phone_number})
+            if user:
+                return str(user.get("user_id") or user.get("_id"))
+    except Exception:
+        logger.exception("_resolve_user_id_for_number failed for %s", phone_number)
+    return "unknown"
 
 
 def _extract_key_points(summary: str) -> List[str]:
