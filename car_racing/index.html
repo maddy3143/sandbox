@@ -20,6 +20,10 @@
     display: block;
     border: 2px solid #e94560;
     box-shadow: 0 0 40px rgba(233, 69, 96, 0.4), 0 0 80px rgba(79, 195, 247, 0.1);
+    max-width: 100vw;
+    max-height: calc(100vh - 80px);
+    width: auto;
+    height: auto;
   }
   #controls {
     margin-top: 14px;
@@ -98,6 +102,10 @@ document.getElementById('btnLeft').addEventListener('mousedown',  () => tryMove(
 document.getElementById('btnRight').addEventListener('mousedown', () => tryMove(+1));
 document.getElementById('btnLeft').addEventListener('touchstart',  e => { e.preventDefault(); tryMove(-1); });
 document.getElementById('btnRight').addEventListener('touchstart', e => { e.preventDefault(); tryMove(+1); });
+
+// Tap canvas to start / restart
+canvas.addEventListener('click', handleAction);
+canvas.addEventListener('touchend', e => { e.preventDefault(); handleAction(); });
 
 function handleAction() {
   if (state === 'start' || state === 'gameover') startGame();
@@ -395,15 +403,15 @@ function draw() {
 
   if (state === 'start')
     drawOverlay('CAR RACER', '#4fc3f7',
-      '← → Arrow keys or buttons to change lanes',
+      'Use ← → buttons to change lanes',
       'Avoid oncoming traffic — you have 3 lives!',
-      'Press SPACE or ENTER to start');
+      'Tap screen or press SPACE to start');
 
   if (state === 'gameover')
     drawOverlay('GAME OVER', '#ef5350',
       `Score: ${score}`,
       `Best: ${highScore}`,
-      'Press SPACE or ENTER to play again');
+      'Tap screen or press SPACE to play again');
 }
 
 // ── Loop ──────────────────────────────────────────────────────
