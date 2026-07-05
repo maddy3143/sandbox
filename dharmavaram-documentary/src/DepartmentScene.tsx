@@ -139,7 +139,7 @@ const PhotoTile: React.FC<{
         transform: `translate(${tx}px, ${ty}px)`,
         overflow: "hidden",
         borderRadius: 12,
-        background: "rgba(4,10,22,0.92)",
+        background: "#0a1020",
         boxShadow: `0 14px 52px rgba(0,0,0,0.8), 0 0 0 2px ${GOLD}, 0 0 24px rgba(201,162,39,${glowOp.toFixed(2)})`,
         position: "relative",
       }}
@@ -149,8 +149,8 @@ const PhotoTile: React.FC<{
         style={{
           width: "100%",
           height: "100%",
-          objectFit: "contain",          // full image always visible, no cropping
-          objectPosition: "center center",
+          objectFit: "cover",            // fills tile completely — no dark bars
+          objectPosition: "center 20%",  // favour top of image (faces, key content)
           transform: ambientTransform,   // Ken Burns ambient animation
           transformOrigin: "center center",
           display: "block",
