@@ -246,6 +246,8 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
   const content = DEPT_CONTENT[scene.page];
   const images = content?.images ?? [];
   const hasImages = images.length >= 3;
+  // Cap at 7 images to avoid overcrowding; show as many as available up to that
+  const displayImages = images.slice(0, 7);
 
   const fadeIn = interpolate(frame, [0, fps * 0.5], [0, 1], clamp);
   const fadeOut = interpolate(frame, [durationInFrames - fps * 0.6, durationInFrames], [1, 0], clamp);
@@ -294,9 +296,6 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
   const rightLeft = hasImages ? "57%" : "5%";
   const rightWidth = hasImages ? "39%" : "90%";
 
-  // Staggered tile delays
-  const tileDelays = [8, 24, 40, 56];
-
   return (
     <AbsoluteFill style={{ background: NAVY, overflow: "hidden", opacity }}>
       {/* Blurred background */}
@@ -320,57 +319,73 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
       />
 
       {/* ── PHOTO PANEL (left 55%) ── */}
-      {hasImages && (
-        <div
-          style={{
-            position: "absolute",
-            left: 32,
-            top: 0,
-            bottom: 0,
-            width: "55%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            gap: 10,
-            padding: "48px 14px 48px 0",
-          }}
-        >
-          {images.length === 3 && (
-            <>
-              {/* Tall top image */}
-              <PhotoTile
-                src={images[0]} delay={tileDelays[0]} sceneIndex={sceneIndex} tileIndex={0}
-                style={{ height: 370, width: "100%", flexShrink: 0 }}
-              />
-              {/* Two side-by-side below */}
+      {hasImages && (() => {
+        const di = displayImages;
+        const n = di.length;
+        // Adaptive layout based on image count:
+        //   3       → 1 tall top  +  row of 2
+        //   4       → 1 tall top  +  row of 3
+        //   5       → 1 top       +  row of 2  +  row of 2
+        //   6       → 1 top       +  row of 3  +  row of 2
+        //   7       → 1 top       +  row of 3  +  row of 3
+        const topH = n <= 4 ? 360 : 280;
+        const delays = [8, 22, 36, 50, 64, 78, 92];
+
+        // Slices for each row
+        const row1 = n === 3 ? di.slice(1, 3) :
+                     n === 4 ? di.slice(1, 4) :
+                     n === 5 ? di.slice(1, 3) :
+                     n === 6 ? di.slice(1, 4) :
+                               di.slice(1, 4); // 7
+        const row2 = n === 5 ? di.slice(3, 5) :
+                     n === 6 ? di.slice(4, 6) :
+                     n === 7 ? di.slice(4, 7) : [];
+
+        return (
+          <div
+            style={{
+              position: "absolute",
+              left: 32,
+              top: 0,
+              bottom: 0,
+              width: "55%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: 10,
+              padding: "44px 14px 44px 0",
+            }}
+          >
+            {/* Top image — full width */}
+            <PhotoTile
+              src={di[0]} delay={delays[0]} sceneIndex={sceneIndex} tileIndex={0}
+              style={{ height: topH, width: "100%", flexShrink: 0 }}
+            />
+            {/* Row 1 */}
+            <div style={{ display: "flex", gap: 10, flex: 1 }}>
+              {row1.map((src, idx) => (
+                <PhotoTile
+                  key={src} src={src} delay={delays[1 + idx]}
+                  sceneIndex={sceneIndex} tileIndex={1 + idx}
+                  style={{ flex: 1 }}
+                />
+              ))}
+            </div>
+            {/* Row 2 (only when 5+ images) */}
+            {row2.length > 0 && (
               <div style={{ display: "flex", gap: 10, flex: 1 }}>
-                <PhotoTile src={images[1]} delay={tileDelays[1]} sceneIndex={sceneIndex} tileIndex={1}
-                  style={{ flex: 1 }} />
-                <PhotoTile src={images[2]} delay={tileDelays[2]} sceneIndex={sceneIndex} tileIndex={2}
-                  style={{ flex: 1 }} />
+                {row2.map((src, idx) => (
+                  <PhotoTile
+                    key={src} src={src} delay={delays[1 + row1.length + idx]}
+                    sceneIndex={sceneIndex} tileIndex={1 + row1.length + idx}
+                    style={{ flex: 1 }}
+                  />
+                ))}
               </div>
-            </>
-          )}
-          {images.length >= 4 && (
-            <>
-              <PhotoTile
-                src={images[0]} delay={tileDelays[0]} sceneIndex={sceneIndex} tileIndex={0}
-                style={{ height: 340, width: "100%", flexShrink: 0 }}
-              />
-              <div style={{ display: "flex", gap: 10, flex: 1 }}>
-                <PhotoTile src={images[1]} delay={tileDelays[1]} sceneIndex={sceneIndex} tileIndex={1}
-                  style={{ flex: 1 }} />
-                <PhotoTile src={images[2]} delay={tileDelays[2]} sceneIndex={sceneIndex} tileIndex={2}
-                  style={{ flex: 1 }} />
-                {images[3] && (
-                  <PhotoTile src={images[3]} delay={tileDelays[3]} sceneIndex={sceneIndex} tileIndex={3}
-                    style={{ flex: 1 }} />
-                )}
-              </div>
-            </>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── GOLD DIVIDER ── */}
       {hasImages && (
