@@ -1,0 +1,420 @@
+export interface DeptContent {
+  titleTelugu: string;
+  titleEnglish: string;
+  highlights: { label: string; value?: string }[];
+  images: string[]; // staticFile paths
+}
+
+export const DEPT_CONTENT: Record<number, DeptContent> = {
+  3: {
+    titleTelugu: "ప్రధాన అభివృద్ధి ప్రాజెక్టులు",
+    titleEnglish: "Major Development Projects",
+    highlights: [
+      { label: "ఆయుర్వేద కళాశాల", value: "రూ. 70 కోట్లు" },
+      { label: "మెగా హ్యాండ్లూమ్ క్లస్టర్", value: "రూ. 40 కోట్లు" },
+      { label: "క్లస్టర్ మంజూరు మొత్తం", value: "₹1,481.66 లక్షలు" },
+      { label: "కేటాయించిన భూమి", value: "9.84 ఎకరాలు" },
+      { label: "మగ్గాల ఆధునీకరణ నిధులు", value: "రూ. 9 కోట్లు" },
+    ],
+    images: [
+      "dept-images/page-03/img-01.jpeg",
+      "dept-images/page-03/img-02.jpeg",
+      "dept-images/page-03/img-03.jpeg",
+    ],
+  },
+  4: {
+    titleTelugu: "రెవెన్యూ శాఖ",
+    titleEnglish: "Revenue Department",
+    highlights: [
+      { label: "ట్రాక్ చేయబడిన ఖాతాలు", value: "21,998" },
+      { label: "పాస్ బుక్కులు పంపిణీ", value: "15,670" },
+      { label: "మ్యుటేషన్ నమోదులు", value: "6,273" },
+      { label: "LA కేసులు పరిష్కరించారు", value: "28/32" },
+      { label: "ముద్రణ సన్నద్ధత", value: "71.23%" },
+    ],
+    images: [
+      "dept-images/page-04/img-01.jpeg",
+      "dept-images/page-04/img-02.jpeg",
+      "dept-images/page-04/img-03.jpeg",
+    ],
+  },
+  5: {
+    titleTelugu: "PR&RD పంచాయతీ రాజ్ మరియు గ్రామీణాభివృద్ధి",
+    titleEnglish: "PR&RD – Panchayat Raj & Rural Development",
+    highlights: [
+      { label: "పల్లె పండుగ-1 పనులు", value: "314 పనులు – ₹1,200 లక్షలు" },
+      { label: "పల్లె పండుగ-2 పనులు", value: "18 పనులు – ₹825 లక్షలు" },
+      { label: "పూర్తైన రోడ్లు", value: "22.21 + 9.40 కి.మీ." },
+      { label: "BT రోడ్డు – అనంతపురం–చింతలపల్లి", value: "రూ. 120 లక్షలు" },
+      { label: "BT రోడ్డు – పొతులనాగేపల్లి–కనంపల్లి", value: "రూ. 200 లక్షలు" },
+    ],
+    images: [
+      "dept-images/page-05/img-01.jpeg",
+      "dept-images/page-05/img-02.jpeg",
+      "dept-images/page-05/img-03.jpeg",
+    ],
+  },
+  6: {
+    titleTelugu: "PR&RD ఇంజనీరింగ్",
+    titleEnglish: "PR&RD Engineering",
+    highlights: [
+      { label: "నియోజకవర్గ పనులు", value: "49 పనులు" },
+      { label: "మొత్తం రోడ్డు పొడవు", value: "228 కి.మీ." },
+      { label: "అంచనా వ్యయం", value: "రూ. 138 కోట్లు" },
+      { label: "NABARD BT రోడ్లు", value: "రూ. 500 లక్షలు – 14.9 కి.మీ." },
+      { label: "SASCI రోడ్ల బలోపేతం", value: "44.348 కి.మీ. – ₹19.80 కోట్లు" },
+    ],
+    images: [
+      "dept-images/page-06/img-01.jpeg",
+      "dept-images/page-06/img-02.jpeg",
+      "dept-images/page-06/img-03.jpeg",
+    ],
+  },
+  7: {
+    titleTelugu: "RWS&S – గ్రామీణ నీటి సరఫరా మరియు పారిశుధ్యం",
+    titleEnglish: "Rural Water Supply & Sanitation",
+    highlights: [
+      { label: "సేవలందుతున్న జనాభా", value: "1,82,872 – 205 గ్రామాలు" },
+      { label: "CPWS పథకాలు", value: "4" },
+      { label: "PWS/MPWS పథకాలు", value: "193" },
+      { label: "హ్యాండ్ పంపులు", value: "504" },
+      { label: "JJM గ్రాంట్లు", value: "రూ. 100.23 లక్షలు" },
+    ],
+    images: [
+      "dept-images/page-07/img-03.jpeg",
+      "dept-images/page-07/img-04.jpeg",
+      "dept-images/page-07/img-05.jpeg",
+    ],
+  },
+  8: {
+    titleTelugu: "వ్యవసాయం మరియు అనుబంధ రంగాలు",
+    titleEnglish: "Agriculture & Allied Sectors",
+    highlights: [
+      { label: "హార్టికల్చర్ కింద పంటలు", value: "43,195 ఎకరాలు" },
+      { label: "కొత్త తోటలు (MIDH 2024-25)", value: "560 హెక్టార్లు" },
+      { label: "మత్స్యకారుల సహకార సంఘాలు", value: "10 సంఘాలు – 1,630 సభ్యులు" },
+      { label: "చెరువులు అభివృద్ధి", value: "19 చెరువులు" },
+      { label: "చేప పిల్లలు విడుదల", value: "9.15 లక్షలు (2024-25)" },
+    ],
+    images: [
+      "dept-images/page-08/img-01.jpeg",
+      "dept-images/page-08/img-02.jpeg",
+      "dept-images/page-08/img-03.jpeg",
+    ],
+  },
+  9: {
+    titleTelugu: "హ్యాండ్లూమ్ మరియు వస్త్రాలు",
+    titleEnglish: "Handloom & Textiles",
+    highlights: [
+      { label: "NTR భరోసా పెన్షనర్లు", value: "6,049" },
+      { label: "ఉచిత విద్యుత్ కుటుంబాలు", value: "6,768" },
+      { label: "మెగా హ్యాండ్లూమ్ క్లస్టర్", value: "రూ. 35 కోట్లు" },
+      { label: "నేత కార్మికులకు రుణాలు (2024-25)", value: "₹201.30 లక్షలు" },
+      { label: "నేత కార్మికులకు రుణాలు (2025-26)", value: "₹290.40 లక్షలు" },
+    ],
+    images: [
+      "dept-images/page-09/img-01.jpeg",
+      "dept-images/page-09/img-02.jpeg",
+      "dept-images/page-09/img-03.jpeg",
+    ],
+  },
+  10: {
+    titleTelugu: "అటవీ శాఖ",
+    titleEnglish: "Forest Department",
+    highlights: [
+      { label: "అటవీ విస్తీర్ణం", value: "9% అటవీ + 6% అడవి వేలుపు చెట్లు" },
+      { label: "మొత్తం పచ్చదనం", value: "15%" },
+      { label: "CAMPA-CA మొక్కల పెంపకం", value: "37.3 హెక్టార్లు – ₹16.36 లక్షలు" },
+      { label: "ముదిగుబ్బ అటవీ విస్తీర్ణం", value: "5,068 హెక్టార్లు" },
+      { label: "జలధార్ 100 రోజుల కార్యక్రమం", value: "అడవుల శుభ్రపరచడం" },
+    ],
+    images: [
+      "dept-images/page-10/img-04.jpeg",
+      "dept-images/page-10/img-05.jpeg",
+    ],
+  },
+  11: {
+    titleTelugu: "పౌర సరఫరాలు",
+    titleEnglish: "Civil Supplies",
+    highlights: [
+      { label: "మొత్తం రేషన్ కార్డులు", value: "97,566" },
+      { label: "రేషన్ కార్డు యూనిట్లు", value: "2,87,481" },
+      { label: "కొత్త రేషన్ కార్డులు", value: "8,633" },
+      { label: "దీపం లబ్ధిదారులు", value: "80,294" },
+      { label: "నెలవారీ బియ్యం పంపిణీ", value: "14,145 క్వింటాళ్లు" },
+    ],
+    images: [
+      "dept-images/page-11/img-01.jpeg",
+      "dept-images/page-11/img-02.jpeg",
+    ],
+  },
+  12: {
+    titleTelugu: "భూగర్భ జలాలు",
+    titleEnglish: "Groundwater Management",
+    highlights: [
+      { label: "పీజోమీటర్ పర్యవేక్షణ", value: "96 పీజోమీటర్లు" },
+      { label: "జల స్థాయి తగ్గుదల (మే 2025–26)", value: "6.17 మీటర్లు" },
+      { label: "SC/ST నివాసాలకు బోర్వెల్ ఎంపిక", value: "SCSP/TSP కింద" },
+      { label: "భూగర్భ జల సంరక్షణ", value: "పునర్ నింపడం చర్యలు" },
+      { label: "పర్యావరణ అనుమతులు", value: "నిబంధనలకు అనుగుణంగా" },
+    ],
+    images: [
+      "dept-images/page-12/img-01.jpeg",
+      "dept-images/page-12/img-02.jpeg",
+    ],
+  },
+  13: {
+    titleTelugu: "DRDA – జిల్లా గ్రామీణాభివృద్ధి సంస్థ",
+    titleEnglish: "DRDA – District Rural Development Agency",
+    highlights: [
+      { label: "సామాజిక భద్రతా పెన్షను", value: "గ్రామీణ స్థాయిలో అమలు" },
+      { label: "లబ్ధిదారులతో ప్రత్యక్ష సమావేశాలు", value: "క్షేత్ర స్థాయి సందర్శనలు" },
+      { label: "గ్రామీణ జీవనోపాధి కార్యక్రమాలు", value: "సమన్వయంతో అమలు" },
+      { label: "అర్హులైన కుటుంబాలకు సేవలు", value: "సమగ్ర అమలు" },
+      { label: "సంక్షేమ పథకాలు", value: "ప్రతి కుటుంబానికి చేరికలో" },
+    ],
+    images: [
+      "dept-images/page-13/img-01.jpeg",
+      "dept-images/page-13/img-02.jpeg",
+      "dept-images/page-13/img-03.jpeg",
+    ],
+  },
+  14: {
+    titleTelugu: "MEPMA – మహిళా సాధికారత",
+    titleEnglish: "MEPMA – Women's Empowerment",
+    highlights: [
+      { label: "స్వయం సహాయ బృందాలు", value: "2,467 బృందాలు" },
+      { label: "బ్యాంక్ రుణాలు మంజూరు", value: "రూ. 72 కోట్లు" },
+      { label: "వీధి వ్యాపారుల గుర్తింపు", value: "1,352 మంది" },
+      { label: "కుట్టు శిక్షణ (BC కార్పొరేషన్)", value: "500 మందికి" },
+      { label: "అక్షర ఆంధ్ర శిక్షార్థులు", value: "7,885 మంది" },
+    ],
+    images: [
+      "dept-images/page-14/img-01.jpeg",
+      "dept-images/page-14/img-02.jpeg",
+      "dept-images/page-14/img-03.jpeg",
+    ],
+  },
+  15: {
+    titleTelugu: "నీటిపారుదల",
+    titleEnglish: "Irrigation",
+    highlights: [
+      { label: "PABR రైట్ కెనాల్", value: "112 కి.మీ." },
+      { label: "నీటి సరఫరా 2024-25", value: "62.24 MCft" },
+      { label: "నీటి సరఫరా 2025-26", value: "73 MCft" },
+      { label: "ధర్మవరం బ్రాంచ్ కెనాల్ లైనింగ్", value: "13.9 కి.మీ. (79%)" },
+      { label: "చిన్న నీటిపారుదల పనులు", value: "73 పనులు – ₹99 లక్షలు" },
+    ],
+    images: [
+      "dept-images/page-15/img-01.jpeg",
+      "dept-images/page-15/img-02.jpeg",
+      "dept-images/page-15/img-03.jpeg",
+    ],
+  },
+  16: {
+    titleTelugu: "ధర్మవరం మునిసిపాలిటీ",
+    titleEnglish: "Dharmavaram Municipality",
+    highlights: [
+      { label: "మొత్తం అభివృద్ధి పనులు", value: "96 పనులు" },
+      { label: "పనుల వ్యయం", value: "రూ. 9,589 లక్షలు" },
+      { label: "AMRUT నిధులు", value: "రూ. 77.57 కోట్లు" },
+      { label: "BPS/LRS పనులు", value: "రూ. 300 లక్షల – 13 పనులు" },
+      { label: "AHUDA అభివృద్ధి పనులు", value: "రూ. 254.64 లక్షలు" },
+    ],
+    images: [
+      "dept-images/page-16/img-01.jpeg",
+      "dept-images/page-16/img-02.jpeg",
+      "dept-images/page-16/img-03.jpeg",
+    ],
+  },
+  17: {
+    titleTelugu: "వైద్యం మరియు ఆరోగ్యం",
+    titleEnglish: "Medical & Health",
+    highlights: [
+      { label: "సేవలందుతున్న జనాభా", value: "3,36,927" },
+      { label: "ఆయుష్మాన్ ఆరోగ్య కేంద్రాలు", value: "51 క్లినిక్లు" },
+      { label: "AB-PMJAY నమోదు", value: "1,30,241 మంది (43.52%)" },
+      { label: "ఏరియా హాస్పిటల్ డయాలిసిస్", value: "2024 డిసెంబర్ 24 ప్రారంభం" },
+      { label: "BPHU భవనాల నిర్మాణం", value: "తాడిమర్తి, ముదిగుబ్బ – పూర్తి" },
+    ],
+    images: [
+      "dept-images/page-17/img-01.jpeg",
+      "dept-images/page-17/img-02.jpeg",
+      "dept-images/page-17/img-03.jpeg",
+    ],
+  },
+  18: {
+    titleTelugu: "CMRF & ఆయుష్మాన్ భారత్ ఆరోగ్య మందిరాలు",
+    titleEnglish: "CMRF & Ayushman Bharat Health",
+    highlights: [
+      { label: "CMRF లబ్ధిదారులు", value: "913 మంది" },
+      { label: "CMRF ఆర్థిక సహాయం", value: "రూ. 9.65 కోట్లు" },
+      { label: "CMRF చెక్కుల పంపిణీ", value: "849 చెక్కులు" },
+      { label: "LOC సహాయం", value: "64/69 – ₹3,35,42,239" },
+      { label: "గ్రామ ఆరోగ్య క్లినిక్లు", value: "51 క్లినిక్లు – 3 కొత్త భవనాలు" },
+    ],
+    images: [
+      "dept-images/page-18/img-01.jpeg",
+      "dept-images/page-18/img-02.jpeg",
+      "dept-images/page-18/img-03.jpeg",
+    ],
+  },
+  19: {
+    titleTelugu: "విద్య",
+    titleEnglish: "Education",
+    highlights: [
+      { label: "KGBV మౌలిక సదుపాయాలు", value: "రూ. 254.09 లక్షలు" },
+      { label: "KGBV అభివృద్ధి – 4 మండలాలు", value: "రూ. 526 లక్షలు" },
+      { label: "PM SHRI – APMS సదుపాయాలు", value: "కంప్యూటర్ లాబ్, ఆట మైదానం" },
+      { label: "ఉచిత సైకిళ్లు (10వ తరగతి)", value: "SSC ఫీజుల చెల్లింపు" },
+      { label: "మూడు KGBVల్లో ప్రయోగశాలలు", value: "భౌతిక, రసాయన, జీవశాస్త్ర లాబ్లు" },
+    ],
+    images: [
+      "dept-images/page-19/img-01.jpeg",
+      "dept-images/page-19/img-02.jpeg",
+      "dept-images/page-19/img-03.jpeg",
+    ],
+  },
+  20: {
+    titleTelugu: "హాస్టళ్ళు – SC, గిరిజన మరియు BC సంక్షేమం",
+    titleEnglish: "SC / ST / BC Welfare Hostels",
+    highlights: [
+      { label: "SW గర్ల్స్ హాస్టల్ విద్యార్థులు", value: "91 మంది" },
+      { label: "SSC ఉత్తీర్ణత", value: "74.46% (105/141)" },
+      { label: "హాస్టల్ మరమ్మత్తులు", value: "రూ. 40.24 లక్షలు (గర్ల్స్)" },
+      { label: "5 హాస్టళ్లలో RO ప్లాంట్లు", value: "6 హాస్టళ్లలో 5కి" },
+      { label: "DMF నిధులతో అభివృద్ధి", value: "రూ. 37.35 లక్షలు" },
+    ],
+    images: [
+      "dept-images/page-20/img-01.jpeg",
+      "dept-images/page-20/img-02.jpeg",
+      "dept-images/page-20/img-03.jpeg",
+    ],
+  },
+  21: {
+    titleTelugu: "విద్యుత్తు – APSPDCL & APTRANSCO",
+    titleEnglish: "Electricity – APSPDCL & APTRANSCO",
+    highlights: [
+      { label: "విద్యుత్ మౌలిక సదుపాయాలు", value: "4,921" },
+      { label: "రూఫ్టాప్ సోలార్ ప్లాంట్లు", value: "449 (2,271 KW)" },
+      { label: "ఉచిత సోలార్ ప్లాంట్లు SC/ST", value: "163 (1,244 ప్లాంట్లు)" },
+      { label: "కొత్త ట్రాన్స్ఫార్మర్లు", value: "117 – రూ. 198 లక్షలు" },
+      { label: "RDSS పథకం", value: "152 గ్రామాలు – రూ. 30.90 కోట్లు" },
+    ],
+    images: [
+      "dept-images/page-21/img-01.jpeg",
+      "dept-images/page-21/img-02.jpeg",
+      "dept-images/page-21/img-03.jpeg",
+    ],
+  },
+  22: {
+    titleTelugu: "రోడ్లు మరియు భవనాలు",
+    titleEnglish: "Roads & Buildings",
+    highlights: [
+      { label: "రైల్వే ఓవర్ బ్రిడ్జి", value: "రూ. 50 కోట్లు" },
+      { label: "NH-342 జాతీయ రహదారి", value: "రూ. 202.34 కోట్లు EPC" },
+      { label: "NH-42 ముదిగుబ్బ బైపాస్", value: "90% పూర్తి" },
+      { label: "కోర్టు కాంప్లెక్స్ అభివృద్ధి", value: "రెండు కొత్త సివిల్ కోర్టు భవనాలు" },
+      { label: "భూ సేకరణ కేసులు", value: "32లో 28 పరిష్కారం" },
+    ],
+    images: [
+      "dept-images/page-22/img-03.jpeg",
+      "dept-images/page-22/img-04.jpeg",
+      "dept-images/page-22/img-05.jpeg",
+    ],
+  },
+  23: {
+    titleTelugu: "మహిళా మరియు శిశు సంక్షేమం",
+    titleEnglish: "Women & Child Welfare",
+    highlights: [
+      { label: "బాలమృతం లబ్ధిదారులు", value: "5,900 పిల్లలు" },
+      { label: "బాలసంజీవని", value: "4,208 పిల్లలు" },
+      { label: "పోషణ కిట్లు", value: "2,565 (గర్భిణీ మహిళలు)" },
+      { label: "PMMVY లబ్ధిదారులు", value: "3,650 మంది – రూ. 1.06 కోట్లు" },
+      { label: "అంగన్వాడి కేంద్రాలు", value: "464 కేంద్రాలు" },
+    ],
+    images: [
+      "dept-images/page-23/img-01.jpeg",
+    ],
+  },
+  24: {
+    titleTelugu: "పరిశ్రమలు మరియు MSME",
+    titleEnglish: "Industries & MSME",
+    highlights: [
+      { label: "మెగా చేనేత క్లస్టర్ (NHDP)", value: "రూ. 9 కోట్ల మగ్గం నవీకరణ" },
+      { label: "APIIC MSME పార్కు", value: "వస్త్ర పరిశ్రమ బలోపేతం" },
+      { label: "ముద్రా రుణ మద్దతు", value: "నేత కార్మికులకు ఆర్థిక సహాయం" },
+      { label: "యువతకు ఉపాధి అవకాశాలు", value: "స్థానిక వ్యాపారాల ఆధునీకరణ" },
+      { label: "చేతివృత్తుల ఆధునీకరణ", value: "మెరుగైన మార్కెట్ అవకాశాలు" },
+    ],
+    images: [
+      "dept-images/page-24/img-03.jpeg",
+      "dept-images/page-24/img-04.jpeg",
+      "dept-images/page-24/img-05.jpeg",
+    ],
+  },
+  25: {
+    titleTelugu: "గృహనిర్మాణం",
+    titleEnglish: "Housing",
+    highlights: [
+      { label: "మొత్తం మంజూరు ఇళ్లు", value: "15,062" },
+      { label: "పూర్తయిన ఇళ్లు", value: "6,749" },
+      { label: "మొత్తం వ్యయం", value: "రూ. 199 కోట్లు" },
+      { label: "PMAY 2.0 కొత్త ఇళ్లు", value: "1,208" },
+      { label: "పట్టణ గృహ నిర్మాణం", value: "12,769 గృహాలు – రూ. 171.62 కోట్లు" },
+    ],
+    images: [
+      "dept-images/page-25/img-01.jpeg",
+      "dept-images/page-25/img-02.jpeg",
+      "dept-images/page-25/img-03.jpeg",
+    ],
+  },
+  26: {
+    titleTelugu: "రవాణా – APSRTC",
+    titleEnglish: "Transport – APSRTC",
+    highlights: [
+      { label: "ధర్మవరం డిపో బస్సులు", value: "8 సూపర్ + 15 ఎక్స్ప్రెస్ + 26 పల్లె" },
+      { label: "స్త్రీ శక్తి", value: "మహిళలకు ఉచిత బస్సు (ఆగస్టు 15, 2025)" },
+      { label: "దివ్యాంగ శక్తి", value: "దివ్యాంగులకు ఉచిత బస్సు (మార్చి 18, 2026)" },
+      { label: "అన్ని రూట్లలో సేవలు", value: "గ్రామీణ ప్రాంతాలు కూడా" },
+      { label: "సురక్షితమైన ప్రజా రవాణా", value: "అన్ని వర్గాలకు అందుబాటులో" },
+    ],
+    images: [
+      "dept-images/page-26/img-01.jpeg",
+      "dept-images/page-26/img-02.jpeg",
+      "dept-images/page-26/img-03.jpeg",
+    ],
+  },
+  27: {
+    titleTelugu: "సంస్కృతి సేవా సమితి – సమాజ సేవ",
+    titleEnglish: "Sanskriti Seva Samiti – Social Service",
+    highlights: [
+      { label: "నేత్ర సంరక్షణ", value: "రూ. 2.47 కోట్లు – 125 శస్త్రచికిత్సలు" },
+      { label: "సివిల్ సర్వీసెస్ కోచింగ్", value: "రూ. 1.00 కోట్లు – 25 అభ్యర్థులు" },
+      { label: "ఉచిత సైకిళ్లు", value: "రూ. 98 లక్షలు – 10వ తరగతి" },
+      { label: "కృత్రిమ అవయవాలు", value: "రూ. 26.48 లక్షలు" },
+      { label: "మొత్తం వ్యయం", value: "రూ. 8.06 కోట్లు" },
+    ],
+    images: [
+      "dept-images/page-27/img-01.jpeg",
+      "dept-images/page-27/img-02.jpeg",
+      "dept-images/page-27/img-03.jpeg",
+    ],
+  },
+  28: {
+    titleTelugu: "సంస్కృతి సేవా సమితి – ఆరోగ్యం మరియు వైద్య వ్యాప్తి",
+    titleEnglish: "Sanskriti Seva Samiti – Health & Medical",
+    highlights: [
+      { label: "డయాలిసిస్ యూనిట్", value: "10 పడకలు – రూ. 4 కోట్లు" },
+      { label: "4D అల్ట్రాసౌండ్ పరికరాలు", value: "మాతృ-శిశు వైద్య సేవలు" },
+      { label: "కృత్రిమ అంగాల పంపిణీ", value: "212 దివ్యాంగులు – రూ. 26.48 లక్షలు" },
+      { label: "CMRF ఆర్థిక సహాయం", value: "913 మంది – రూ. 9.65 కోట్లు" },
+      { label: "వైద్య శిబిరాలు", value: "ధర్మవరం ప్రజలకు నాయమైన సేవలు" },
+    ],
+    images: [
+      "dept-images/page-28/img-01.jpeg",
+      "dept-images/page-28/img-02.jpeg",
+      "dept-images/page-28/img-03.jpeg",
+    ],
+  },
+};
