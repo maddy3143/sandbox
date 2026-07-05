@@ -1,0 +1,18 @@
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/fa43860e.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/950990a5.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/fonts/38c97407.ttf') format('truetype');
+}

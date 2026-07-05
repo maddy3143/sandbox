@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../public/fonts/fa43860e.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../public/fonts/950990a5.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans Telugu';
+  font-style: normal;
+  font-weight: 800;
+  src: url('../public/fonts/38c97407.ttf') format('truetype');
+}
+
+* {
+  font-family: 'Noto Sans Telugu', 'Unifont', sans-serif;
+}
