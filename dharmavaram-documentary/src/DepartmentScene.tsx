@@ -16,7 +16,7 @@ const NAVY = "#0A1628";
 const clamp = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 const ez = Easing.bezier(0.16, 1, 0.3, 1);
 
-// 26 entry directions — cycles once per dept scene so adjacent tiles always differ
+// ─── Entry directions for image tiles — cycles per scene ────────────────────
 const ENTRY_DIRS: Array<"left" | "right" | "bottom" | "top"> = [
   "left",   "bottom", "top",    "right",  "left",
   "bottom", "top",    "right",  "left",   "bottom",
@@ -26,61 +26,49 @@ const ENTRY_DIRS: Array<"left" | "right" | "bottom" | "top"> = [
   "bottom",
 ];
 
-// easeOutCubic helper
+// ─── Text row animation types (6 distinct) ───────────────────────────────────
+type RowAnim = "slideRight" | "slideLeft" | "slideUp" | "fadeScale" | "bounceRight" | "glowUp";
+const ROW_ANIMS: RowAnim[] = ["slideRight", "slideLeft", "slideUp", "fadeScale", "bounceRight", "glowUp"];
+
 const eOut = (x: number) => 1 - Math.pow(1 - Math.min(Math.max(x, 0), 1), 3);
 
-/**
- * 26 distinct ambient image transforms — one per department scene.
- * `frame` is frames elapsed *after* the tile has fully entered (entry settle).
- */
+// ─── Ambient image transform (26 distinct per-scene styles) ─────────────────
 function getAmbientTransform(sceneIndex: number, frame: number): string {
   const si = ((sceneIndex % 26) + 26) % 26;
-  const t = Math.min(frame / 450, 1); // progress 0→1 over 15 s scene
+  const t = Math.min(frame / 450, 1);
 
   switch (si) {
-    // ── Zoom family ──────────────────────────────────────────────────────────
-    case 0:  return `scale(${(1.0 + eOut(t) * 0.13).toFixed(4)})`; // slow zoom in
-    case 1:  return `scale(${(1.13 - eOut(t) * 0.13).toFixed(4)})`; // slow zoom out
-    case 9:  return `scale(${(1.0 + Math.max(0, 1 - t * 7) * 0.42).toFixed(4)})`; // snap settle
-    case 13: return `scale(${Math.max(1.0, 1.65 - eOut(Math.min(t * 4, 1)) * 0.65).toFixed(4)})`; // depth push
-    case 25: return `scale(${Math.max(1.0, 2.2 - eOut(Math.min(t * 6, 1)) * 1.2).toFixed(4)})`; // storm settle
-
-    // ── Pan family ───────────────────────────────────────────────────────────
-    case 2:  return `scale(1.09) translateX(${(t * -38).toFixed(1)}px)`; // pan left
-    case 3:  return `scale(1.09) translateX(${((t - 0.5) * 62).toFixed(1)}px)`; // pan right
-    case 4:  return `scale(1.09) translateY(${(t * -38).toFixed(1)}px)`; // pan up
-    case 7:  return `scale(1.05) translateY(${(-t * 32).toFixed(1)}px)`; // float up
-    case 8:  return `scale(1.05) translateY(${(t * 32).toFixed(1)}px)`; // float down
-    case 24: return `scale(1.07) translateY(${(-t * 44).toFixed(1)}px)`; // float fast
-
-    // ── Ken Burns diagonals ───────────────────────────────────────────────────
-    case 5:  return `scale(${(1.0 + t * 0.13).toFixed(4)}) translateX(${(t * -24).toFixed(1)}px) translateY(${(t * -24).toFixed(1)}px)`; // kb top-right
-    case 6:  return `scale(${(1.0 + t * 0.13).toFixed(4)}) translateX(${(t * 24).toFixed(1)}px) translateY(${(t * 24).toFixed(1)}px)`;  // kb bot-left
-    case 14: return `scale(${(1.0 + t * 0.13).toFixed(4)}) translateX(${(t * 24).toFixed(1)}px) translateY(${(t * -24).toFixed(1)}px)`; // kb top-left
-    case 15: return `scale(${(1.0 + t * 0.13).toFixed(4)}) translateX(${(t * -24).toFixed(1)}px) translateY(${(t * 24).toFixed(1)}px)`;  // kb bot-right
-    case 23: return `scale(${(1.0 + eOut(t) * 0.1).toFixed(4)}) translateX(${(t * 20).toFixed(1)}px)`; // kb alt
-
-    // ── Tilt corrections ─────────────────────────────────────────────────────
-    case 10: return `scale(${(1.09 - eOut(t) * 0.09).toFixed(4)}) rotate(${((1 - eOut(t)) * -3.5).toFixed(2)}deg)`; // tilt left
-    case 11: return `scale(${(1.09 - eOut(t) * 0.09).toFixed(4)}) rotate(${((1 - eOut(t)) * 3.5).toFixed(2)}deg)`;  // tilt right
-
-    // ── Drift / slide ────────────────────────────────────────────────────────
-    case 12: return `scale(1.09) translateX(${(-30 + t * 62).toFixed(1)}px)`; // drift right
-    case 17: return `scale(${(1.11 - eOut(t) * 0.09).toFixed(4)}) translateX(${((1 - eOut(t)) * -28).toFixed(1)}px)`; // slide-zoom
-    case 22: return `scale(1.07) translateX(${((1 - eOut(Math.min(t * 5, 1))) * -65).toFixed(1)}px)`; // fast pan settle
-    case 21: return `scale(${(1.12 - eOut(t) * 0.12).toFixed(4)}) translateY(${(t * 28).toFixed(1)}px)`; // zoom-pan down
-
-    // ── Organic / oscillate ───────────────────────────────────────────────────
-    case 16: return `scale(${(1.0 + Math.sin(t * Math.PI) * 0.065).toFixed(4)})`; // breathe (half period)
-    case 18: return `scale(1.05) rotate(${(t * 1.8 - 0.9).toFixed(2)}deg)`; // revolve
-    case 19: return `scale(${(1.0 + t * 0.09).toFixed(4)}) rotate(${((1 - t) * 0.6).toFixed(2)}deg)`; // cinematic
-    case 20: return `scale(1.05) translateY(${(Math.sin(t * Math.PI * 2) * 16).toFixed(1)}px)`; // wave float
-
-    default: return `scale(${(1.0 + t * 0.07).toFixed(4)})`;
+    case 0:  return `scale(${(1.0 + eOut(t) * 0.12).toFixed(4)})`;
+    case 1:  return `scale(${(1.12 - eOut(t) * 0.12).toFixed(4)})`;
+    case 9:  return `scale(${(1.0 + Math.max(0, 1 - t * 7) * 0.40).toFixed(4)})`;
+    case 13: return `scale(${Math.max(1.0, 1.60 - eOut(Math.min(t * 4, 1)) * 0.60).toFixed(4)})`;
+    case 25: return `scale(${Math.max(1.0, 2.1 - eOut(Math.min(t * 6, 1)) * 1.1).toFixed(4)})`;
+    case 2:  return `scale(1.08) translateX(${(t * -36).toFixed(1)}px)`;
+    case 3:  return `scale(1.08) translateX(${((t - 0.5) * 58).toFixed(1)}px)`;
+    case 4:  return `scale(1.08) translateY(${(t * -36).toFixed(1)}px)`;
+    case 7:  return `scale(1.05) translateY(${(-t * 30).toFixed(1)}px)`;
+    case 8:  return `scale(1.05) translateY(${(t * 30).toFixed(1)}px)`;
+    case 24: return `scale(1.06) translateY(${(-t * 42).toFixed(1)}px)`;
+    case 5:  return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * -22).toFixed(1)}px) translateY(${(t * -22).toFixed(1)}px)`;
+    case 6:  return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * 22).toFixed(1)}px) translateY(${(t * 22).toFixed(1)}px)`;
+    case 14: return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * 22).toFixed(1)}px) translateY(${(t * -22).toFixed(1)}px)`;
+    case 15: return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * -22).toFixed(1)}px) translateY(${(t * 22).toFixed(1)}px)`;
+    case 23: return `scale(${(1.0 + eOut(t) * 0.10).toFixed(4)}) translateX(${(t * 18).toFixed(1)}px)`;
+    case 10: return `scale(${(1.08 - eOut(t) * 0.08).toFixed(4)}) rotate(${((1 - eOut(t)) * -3.5).toFixed(2)}deg)`;
+    case 11: return `scale(${(1.08 - eOut(t) * 0.08).toFixed(4)}) rotate(${((1 - eOut(t)) * 3.5).toFixed(2)}deg)`;
+    case 12: return `scale(1.08) translateX(${(-28 + t * 58).toFixed(1)}px)`;
+    case 17: return `scale(${(1.10 - eOut(t) * 0.08).toFixed(4)}) translateX(${((1 - eOut(t)) * -26).toFixed(1)}px)`;
+    case 22: return `scale(1.06) translateX(${((1 - eOut(Math.min(t * 5, 1))) * -62).toFixed(1)}px)`;
+    case 21: return `scale(${(1.10 - eOut(t) * 0.10).toFixed(4)}) translateY(${(t * 26).toFixed(1)}px)`;
+    case 16: return `scale(${(1.0 + Math.sin(t * Math.PI) * 0.06).toFixed(4)})`;
+    case 18: return `scale(1.04) rotate(${(t * 1.8 - 0.9).toFixed(2)}deg)`;
+    case 19: return `scale(${(1.0 + t * 0.08).toFixed(4)}) rotate(${((1 - t) * 0.55).toFixed(2)}deg)`;
+    case 20: return `scale(1.04) translateY(${(Math.sin(t * Math.PI * 2) * 15).toFixed(1)}px)`;
+    default: return `scale(${(1.0 + t * 0.06).toFixed(4)})`;
   }
 }
 
-// ─── PhotoTile ──────────────────────────────────────────────────────────────
+// ─── PhotoTile ───────────────────────────────────────────────────────────────
 
 const PhotoTile: React.FC<{
   src: string;
@@ -93,28 +81,18 @@ const PhotoTile: React.FC<{
 
   const entryDir = ENTRY_DIRS[((sceneIndex % 26) + 26) % 26];
 
-  // Fade-in
   const op = interpolate(frame, [delay, delay + 22], [0, 1], clamp);
-
-  // Entry slide (container moves, overflow:hidden clips the inner image)
   const tx =
-    entryDir === "left"  ? interpolate(frame, [delay, delay + 32], [-90, 0], { ...clamp, easing: ez }) :
-    entryDir === "right" ? interpolate(frame, [delay, delay + 32], [90, 0],  { ...clamp, easing: ez }) : 0;
+    entryDir === "left"  ? interpolate(frame, [delay, delay + 34], [-100, 0], { ...clamp, easing: ez }) :
+    entryDir === "right" ? interpolate(frame, [delay, delay + 34], [100, 0],  { ...clamp, easing: ez }) : 0;
   const ty =
-    entryDir === "bottom" ? interpolate(frame, [delay, delay + 32], [90, 0],  { ...clamp, easing: ez }) :
-    entryDir === "top"    ? interpolate(frame, [delay, delay + 32], [-90, 0], { ...clamp, easing: ez }) : 0;
+    entryDir === "bottom" ? interpolate(frame, [delay, delay + 34], [100, 0],  { ...clamp, easing: ez }) :
+    entryDir === "top"    ? interpolate(frame, [delay, delay + 34], [-100, 0], { ...clamp, easing: ez }) : 0;
 
-  // Ambient motion starts after tile has settled (delay + 30 frames)
   const ambientFrame = Math.max(0, frame - delay - 30);
   const ambientTransform = getAmbientTransform(sceneIndex, ambientFrame);
 
-  // Staggered golden border glow pulse
-  const glowOp = interpolate(
-    frame,
-    [delay + 30, delay + 60, delay + 120, delay + 180],
-    [0, 0.8, 0.5, 0.65],
-    clamp
-  );
+  const glowOp = interpolate(frame, [delay + 30, delay + 60, delay + 140, delay + 200], [0, 0.85, 0.5, 0.65], clamp);
 
   return (
     <div
@@ -123,8 +101,10 @@ const PhotoTile: React.FC<{
         opacity: op,
         transform: `translate(${tx}px, ${ty}px)`,
         overflow: "hidden",
-        borderRadius: 10,
-        boxShadow: `0 12px 48px rgba(0,0,0,0.75), 0 0 0 2px ${GOLD}, 0 0 18px rgba(201,162,39,${glowOp.toFixed(2)})`,
+        borderRadius: 12,
+        // Dark fill so letterbox areas from objectFit:contain blend with design
+        background: "rgba(4,10,22,0.92)",
+        boxShadow: `0 14px 52px rgba(0,0,0,0.8), 0 0 0 2px ${GOLD}, 0 0 22px rgba(201,162,39,${glowOp.toFixed(2)})`,
         position: "relative",
         flexShrink: 0,
       }}
@@ -134,20 +114,21 @@ const PhotoTile: React.FC<{
         style={{
           width: "100%",
           height: "100%",
-          objectFit: "cover",
-          objectPosition: "center 25%",  // bias upward to keep faces in frame
+          // contain = full image always visible, no cropping
+          objectFit: "contain",
+          objectPosition: "center center",
           transform: ambientTransform,
           transformOrigin: "center center",
           display: "block",
         }}
       />
-      {/* Inner gold frame overlay */}
+      {/* Inner gold inset frame */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          boxShadow: `inset 0 0 0 2px rgba(201,162,39,0.55)`,
-          borderRadius: 8,
+          boxShadow: `inset 0 0 0 2px rgba(201,162,39,0.5)`,
+          borderRadius: 10,
           pointerEvents: "none",
         }}
       />
@@ -155,40 +136,81 @@ const PhotoTile: React.FC<{
   );
 };
 
-// ─── StatRow ────────────────────────────────────────────────────────────────
+// ─── StatRow — 6 distinct animation types cycling by row index ───────────────
 
 const StatRow: React.FC<{ label: string; value?: string; delay: number; index: number }> = ({
   label,
   value,
   delay,
+  index,
 }) => {
   const frame = useCurrentFrame();
-  const op = interpolate(frame, [delay, delay + 18], [0, 1], clamp);
-  const tx = interpolate(frame, [delay, delay + 25], [40, 0], { ...clamp, easing: ez });
+  const anim = ROW_ANIMS[index % ROW_ANIMS.length];
+
+  const op = interpolate(frame, [delay, delay + 20], [0, 1], clamp);
+
+  let tx = 0, ty = 0, sc = 1;
+  switch (anim) {
+    case "slideRight":
+      tx = interpolate(frame, [delay, delay + 28], [50, 0], { ...clamp, easing: ez });
+      break;
+    case "slideLeft":
+      tx = interpolate(frame, [delay, delay + 28], [-50, 0], { ...clamp, easing: ez });
+      break;
+    case "slideUp":
+      ty = interpolate(frame, [delay, delay + 28], [30, 0], { ...clamp, easing: ez });
+      break;
+    case "fadeScale":
+      sc = interpolate(frame, [delay, delay + 28], [0.78, 1.0], clamp);
+      break;
+    case "bounceRight":
+      // spring: overshoot from right then settle
+      tx = interpolate(
+        frame,
+        [delay, delay + 18, delay + 27, delay + 34],
+        [55, -9, 3, 0],
+        clamp
+      );
+      break;
+    case "glowUp":
+      ty = interpolate(frame, [delay, delay + 28], [22, 0], { ...clamp, easing: ez });
+      break;
+  }
+
+  const valueGlow = anim === "glowUp"
+    ? `0 0 ${interpolate(frame, [delay + 10, delay + 50], [22, 10], clamp).toFixed(1)}px rgba(201,162,39,0.7)`
+    : "0 2px 14px rgba(201,162,39,0.4)";
 
   return (
-    <div style={{ opacity: op, transform: `translateX(${tx}px)`, marginBottom: value ? 18 : 14 }}>
+    <div
+      style={{
+        opacity: op,
+        transform: `translate(${tx}px, ${ty}px) scale(${sc})`,
+        transformOrigin: "left center",
+        marginBottom: value ? 22 : 16,
+      }}
+    >
       {value ? (
         <>
           <div
             style={{
               color: GOLD,
-              fontSize: 24,
+              fontSize: 30,
               fontWeight: 800,
               fontFamily: "'Noto Sans Telugu', sans-serif",
               lineHeight: 1.2,
-              textShadow: "0 2px 12px rgba(201,162,39,0.4)",
+              textShadow: valueGlow,
             }}
           >
             {value}
           </div>
           <div
             style={{
-              color: "#e0e0e0",
-              fontSize: 15,
+              color: "#e8e8e8",
+              fontSize: 18,
               fontFamily: "'Noto Sans Telugu', sans-serif",
               lineHeight: 1.3,
-              marginTop: 2,
+              marginTop: 3,
             }}
           >
             {label}
@@ -197,11 +219,11 @@ const StatRow: React.FC<{ label: string; value?: string; delay: number; index: n
       ) : (
         <div
           style={{
-            color: "#e0e0e0",
-            fontSize: 15,
+            color: "#e8e8e8",
+            fontSize: 18,
             fontFamily: "'Noto Sans Telugu', sans-serif",
-            lineHeight: 1.4,
-            paddingLeft: 14,
+            lineHeight: 1.45,
+            paddingLeft: 16,
             borderLeft: `3px solid ${GOLD}`,
           }}
         >
@@ -212,7 +234,7 @@ const StatRow: React.FC<{ label: string; value?: string; delay: number; index: n
   );
 };
 
-// ─── DepartmentScene ────────────────────────────────────────────────────────
+// ─── DepartmentScene ─────────────────────────────────────────────────────────
 
 export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number }> = ({
   scene,
@@ -223,7 +245,6 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
 
   const content = DEPT_CONTENT[scene.page];
   const images = content?.images ?? [];
-  // Only show photo panel when ≥ 3 images are available
   const hasImages = images.length >= 3;
 
   const fadeIn = interpolate(frame, [0, fps * 0.5], [0, 1], clamp);
@@ -231,19 +252,50 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
   const opacity = Math.min(fadeIn, fadeOut);
 
   const bgScale = interpolate(frame, [0, durationInFrames], [1.0, 1.08], clamp);
-  const titleOp = interpolate(frame, [5, fps * 0.6], [0, 1], { ...clamp, easing: ez });
-  const titleY = interpolate(frame, [5, fps * 0.6], [-30, 0], { ...clamp, easing: ez });
-  const barW = interpolate(frame, [fps * 0.6, fps * 0.9], [0, hasImages ? 180 : 260], { ...clamp, easing: ez });
+
+  // ── Title entry: 6 styles cycling per scene ──────────────────────────────
+  const titleAnimType = ((sceneIndex % 6) + 6) % 6;
+  const titleOp = interpolate(frame, [5, fps * 0.6], [0, 1], clamp);
+
+  let titleTx = 0, titleTy = 0, titleSc = 1;
+  switch (titleAnimType) {
+    case 0: // slide from top
+      titleTy = interpolate(frame, [5, fps * 0.6], [-38, 0], { ...clamp, easing: ez });
+      break;
+    case 1: // slide from left
+      titleTx = interpolate(frame, [5, fps * 0.6], [-75, 0], { ...clamp, easing: ez });
+      break;
+    case 2: // scale in
+      titleSc = interpolate(frame, [5, fps * 0.65], [0.75, 1.0], clamp);
+      break;
+    case 3: // slide from right
+      titleTx = interpolate(frame, [5, fps * 0.6], [75, 0], { ...clamp, easing: ez });
+      break;
+    case 4: // bounce from bottom
+      titleTy = interpolate(
+        frame,
+        [5, Math.round(fps * 0.45), Math.round(fps * 0.6), Math.round(fps * 0.72)],
+        [50, -11, 4, 0],
+        clamp
+      );
+      break;
+    case 5: // diagonal slide (left + up)
+      titleTx = interpolate(frame, [5, fps * 0.6], [-55, 0], { ...clamp, easing: ez });
+      titleTy = interpolate(frame, [5, fps * 0.6], [-28, 0], { ...clamp, easing: ez });
+      break;
+  }
+
+  const barW = interpolate(frame, [fps * 0.6, fps * 0.9], [0, hasImages ? 200 : 280], { ...clamp, easing: ez });
   const dividerH = interpolate(frame, [fps * 0.4, fps * 0.9], [0, 1], { ...clamp, easing: ez });
   const badgeOp = interpolate(frame, [fps * 0.8, fps * 1.2], [0, 1], clamp);
 
   const bgSrc = staticFile(`pages/page-${String(scene.page).padStart(2, "0")}.png`);
 
-  const rightLeft = hasImages ? "56%" : "5%";
-  const rightWidth = hasImages ? "40%" : "90%";
+  const rightLeft = hasImages ? "57%" : "5%";
+  const rightWidth = hasImages ? "39%" : "90%";
 
-  // Tile delays — staggered by 14 frames each
-  const tileDelays = [8, 22, 36, 50];
+  // Staggered tile delays
+  const tileDelays = [8, 24, 40, 56];
 
   return (
     <AbsoluteFill style={{ background: NAVY, overflow: "hidden", opacity }}>
@@ -255,7 +307,7 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
           backgroundImage: `url(${bgSrc})`,
           backgroundSize: "cover",
           backgroundPosition: "center top",
-          filter: "blur(28px) brightness(0.18)",
+          filter: "blur(30px) brightness(0.16)",
           transform: `scale(${bgScale})`,
         }}
       />
@@ -263,35 +315,39 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(135deg, rgba(10,22,40,0.72) 0%, rgba(10,22,40,0.38) 100%)",
+          background: "linear-gradient(135deg, rgba(10,22,40,0.75) 0%, rgba(10,22,40,0.35) 100%)",
         }}
       />
 
-      {/* ── PHOTO PANEL (left 52%) ── */}
+      {/* ── PHOTO PANEL (left 55%) ── */}
       {hasImages && (
         <div
           style={{
             position: "absolute",
-            left: 40,
+            left: 32,
             top: 0,
             bottom: 0,
-            width: "52%",
+            width: "55%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
-            gap: 12,
-            padding: "60px 20px 60px 0",
+            gap: 10,
+            padding: "48px 14px 48px 0",
           }}
         >
           {images.length === 3 && (
             <>
+              {/* Tall top image */}
               <PhotoTile
                 src={images[0]} delay={tileDelays[0]} sceneIndex={sceneIndex} tileIndex={0}
-                style={{ height: 280, width: "100%" }}
+                style={{ height: 370, width: "100%", flexShrink: 0 }}
               />
-              <div style={{ display: "flex", gap: 12, flex: 1 }}>
-                <PhotoTile src={images[1]} delay={tileDelays[1]} sceneIndex={sceneIndex} tileIndex={1} style={{ flex: 1, height: 260 }} />
-                <PhotoTile src={images[2]} delay={tileDelays[2]} sceneIndex={sceneIndex} tileIndex={2} style={{ flex: 1, height: 260 }} />
+              {/* Two side-by-side below */}
+              <div style={{ display: "flex", gap: 10, flex: 1 }}>
+                <PhotoTile src={images[1]} delay={tileDelays[1]} sceneIndex={sceneIndex} tileIndex={1}
+                  style={{ flex: 1 }} />
+                <PhotoTile src={images[2]} delay={tileDelays[2]} sceneIndex={sceneIndex} tileIndex={2}
+                  style={{ flex: 1 }} />
               </div>
             </>
           )}
@@ -299,13 +355,16 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
             <>
               <PhotoTile
                 src={images[0]} delay={tileDelays[0]} sceneIndex={sceneIndex} tileIndex={0}
-                style={{ height: 270, width: "100%" }}
+                style={{ height: 340, width: "100%", flexShrink: 0 }}
               />
-              <div style={{ display: "flex", gap: 12, flex: 1 }}>
-                <PhotoTile src={images[1]} delay={tileDelays[1]} sceneIndex={sceneIndex} tileIndex={1} style={{ flex: 1, height: 260 }} />
-                <PhotoTile src={images[2]} delay={tileDelays[2]} sceneIndex={sceneIndex} tileIndex={2} style={{ flex: 1, height: 260 }} />
+              <div style={{ display: "flex", gap: 10, flex: 1 }}>
+                <PhotoTile src={images[1]} delay={tileDelays[1]} sceneIndex={sceneIndex} tileIndex={1}
+                  style={{ flex: 1 }} />
+                <PhotoTile src={images[2]} delay={tileDelays[2]} sceneIndex={sceneIndex} tileIndex={2}
+                  style={{ flex: 1 }} />
                 {images[3] && (
-                  <PhotoTile src={images[3]} delay={tileDelays[3]} sceneIndex={sceneIndex} tileIndex={3} style={{ flex: 1, height: 260 }} />
+                  <PhotoTile src={images[3]} delay={tileDelays[3]} sceneIndex={sceneIndex} tileIndex={3}
+                    style={{ flex: 1 }} />
                 )}
               </div>
             </>
@@ -318,7 +377,7 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
         <div
           style={{
             position: "absolute",
-            left: "55.5%",
+            left: "57%",
             top: `${(1 - dividerH) * 50}%`,
             width: 2,
             height: `${dividerH * 84}%`,
@@ -338,19 +397,26 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          paddingRight: hasImages ? 50 : 80,
-          paddingLeft: hasImages ? 28 : 80,
+          paddingRight: hasImages ? 44 : 80,
+          paddingLeft: hasImages ? 26 : 80,
         }}
       >
-        {/* Title */}
-        <div style={{ opacity: titleOp, transform: `translateY(${titleY}px)`, marginBottom: 22 }}>
+        {/* Title with per-scene entry animation */}
+        <div
+          style={{
+            opacity: titleOp,
+            transform: `translate(${titleTx}px, ${titleTy}px) scale(${titleSc})`,
+            transformOrigin: "left center",
+            marginBottom: 24,
+          }}
+        >
           <div
             style={{
               color: GOLD,
-              fontSize: 12,
+              fontSize: 14,
               letterSpacing: 3,
               fontFamily: "'Noto Sans Telugu', sans-serif",
-              marginBottom: 6,
+              marginBottom: 7,
               textTransform: "uppercase",
             }}
           >
@@ -359,22 +425,28 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
           <div
             style={{
               color: "#ffffff",
-              fontSize: hasImages ? 28 : 36,
+              fontSize: hasImages ? 34 : 44,
               fontWeight: 800,
               fontFamily: "'Noto Sans Telugu', sans-serif",
               lineHeight: 1.2,
-              textShadow: "0 4px 20px rgba(0,0,0,0.6)",
+              textShadow: "0 4px 22px rgba(0,0,0,0.65)",
             }}
           >
             {content?.titleTelugu ?? ""}
           </div>
-          <div style={{ width: barW, height: 3, background: GOLD, marginTop: 10, borderRadius: 2 }} />
+          <div style={{ width: barW, height: 3, background: GOLD, marginTop: 12, borderRadius: 2 }} />
         </div>
 
-        {/* Highlights */}
+        {/* Highlights — each row gets a different animation */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {content?.highlights.map((h, i) => (
-            <StatRow key={i} label={h.label} value={h.value} delay={fps * 0.7 + i * 12} index={i} />
+            <StatRow
+              key={i}
+              label={h.label}
+              value={h.value}
+              delay={fps * 0.7 + i * 14}
+              index={i}
+            />
           ))}
         </div>
       </div>
@@ -389,9 +461,9 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
           background: "rgba(201,162,39,0.12)",
           border: "1px solid rgba(201,162,39,0.35)",
           borderRadius: 6,
-          padding: "5px 14px",
+          padding: "6px 16px",
           color: GOLD,
-          fontSize: 12,
+          fontSize: 13,
           fontFamily: "'Noto Sans Telugu', sans-serif",
           letterSpacing: 2,
         }}
