@@ -16,97 +16,132 @@ const NAVY = "#0A1628";
 const clamp = { extrapolateLeft: "clamp" as const, extrapolateRight: "clamp" as const };
 const ez = Easing.bezier(0.16, 1, 0.3, 1);
 
-// ─── Entry directions for image tiles — cycles per scene ────────────────────
-const ENTRY_DIRS: Array<"left" | "right" | "bottom" | "top"> = [
-  "left",   "bottom", "top",    "right",  "left",
-  "bottom", "top",    "right",  "left",   "bottom",
-  "top",    "right",  "left",   "bottom", "top",
-  "right",  "left",   "bottom", "top",    "right",
-  "left",   "bottom", "top",    "right",  "left",
-  "bottom",
-];
-
-// ─── Text row animation types (6 distinct) ───────────────────────────────────
+// ─── Text row animation types (6 distinct, cycling by row index) ─────────────
 type RowAnim = "slideRight" | "slideLeft" | "slideUp" | "fadeScale" | "bounceRight" | "glowUp";
 const ROW_ANIMS: RowAnim[] = ["slideRight", "slideLeft", "slideUp", "fadeScale", "bounceRight", "glowUp"];
 
 const eOut = (x: number) => 1 - Math.pow(1 - Math.min(Math.max(x, 0), 1), 3);
 
-// ─── Ambient image transform (26 distinct per-scene styles) ─────────────────
+// ─── Entry direction per tile based on its grid position ────────────────────
+// Left-column tiles slide in from left, right-column from right,
+// centre/single tiles from top or bottom — creates an "opening" look.
+function getTileEntryDir(
+  colIdx: number,
+  rowLength: number,
+  rowIdx: number
+): "left" | "right" | "top" | "bottom" {
+  if (rowLength === 1) return rowIdx % 2 === 0 ? "top" : "bottom";
+  if (colIdx === 0) return "left";
+  if (colIdx === rowLength - 1) return "right";
+  return (rowIdx + colIdx) % 2 === 0 ? "top" : "bottom";
+}
+
+// ─── Ambient image transform (26 distinct per-scene Ken Burns styles) ────────
 function getAmbientTransform(sceneIndex: number, frame: number): string {
   const si = ((sceneIndex % 26) + 26) % 26;
-  const t = Math.min(frame / 450, 1);
+  const t = Math.min(frame / 420, 1); // normalise over scene duration
 
   switch (si) {
-    case 0:  return `scale(${(1.0 + eOut(t) * 0.12).toFixed(4)})`;
-    case 1:  return `scale(${(1.12 - eOut(t) * 0.12).toFixed(4)})`;
-    case 9:  return `scale(${(1.0 + Math.max(0, 1 - t * 7) * 0.40).toFixed(4)})`;
-    case 13: return `scale(${Math.max(1.0, 1.60 - eOut(Math.min(t * 4, 1)) * 0.60).toFixed(4)})`;
-    case 25: return `scale(${Math.max(1.0, 2.1 - eOut(Math.min(t * 6, 1)) * 1.1).toFixed(4)})`;
-    case 2:  return `scale(1.08) translateX(${(t * -36).toFixed(1)}px)`;
-    case 3:  return `scale(1.08) translateX(${((t - 0.5) * 58).toFixed(1)}px)`;
-    case 4:  return `scale(1.08) translateY(${(t * -36).toFixed(1)}px)`;
-    case 7:  return `scale(1.05) translateY(${(-t * 30).toFixed(1)}px)`;
-    case 8:  return `scale(1.05) translateY(${(t * 30).toFixed(1)}px)`;
-    case 24: return `scale(1.06) translateY(${(-t * 42).toFixed(1)}px)`;
-    case 5:  return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * -22).toFixed(1)}px) translateY(${(t * -22).toFixed(1)}px)`;
-    case 6:  return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * 22).toFixed(1)}px) translateY(${(t * 22).toFixed(1)}px)`;
-    case 14: return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * 22).toFixed(1)}px) translateY(${(t * -22).toFixed(1)}px)`;
-    case 15: return `scale(${(1.0 + t * 0.12).toFixed(4)}) translateX(${(t * -22).toFixed(1)}px) translateY(${(t * 22).toFixed(1)}px)`;
-    case 23: return `scale(${(1.0 + eOut(t) * 0.10).toFixed(4)}) translateX(${(t * 18).toFixed(1)}px)`;
-    case 10: return `scale(${(1.08 - eOut(t) * 0.08).toFixed(4)}) rotate(${((1 - eOut(t)) * -3.5).toFixed(2)}deg)`;
-    case 11: return `scale(${(1.08 - eOut(t) * 0.08).toFixed(4)}) rotate(${((1 - eOut(t)) * 3.5).toFixed(2)}deg)`;
-    case 12: return `scale(1.08) translateX(${(-28 + t * 58).toFixed(1)}px)`;
-    case 17: return `scale(${(1.10 - eOut(t) * 0.08).toFixed(4)}) translateX(${((1 - eOut(t)) * -26).toFixed(1)}px)`;
-    case 22: return `scale(1.06) translateX(${((1 - eOut(Math.min(t * 5, 1))) * -62).toFixed(1)}px)`;
-    case 21: return `scale(${(1.10 - eOut(t) * 0.10).toFixed(4)}) translateY(${(t * 26).toFixed(1)}px)`;
-    case 16: return `scale(${(1.0 + Math.sin(t * Math.PI) * 0.06).toFixed(4)})`;
-    case 18: return `scale(1.04) rotate(${(t * 1.8 - 0.9).toFixed(2)}deg)`;
-    case 19: return `scale(${(1.0 + t * 0.08).toFixed(4)}) rotate(${((1 - t) * 0.55).toFixed(2)}deg)`;
-    case 20: return `scale(1.04) translateY(${(Math.sin(t * Math.PI * 2) * 15).toFixed(1)}px)`;
-    default: return `scale(${(1.0 + t * 0.06).toFixed(4)})`;
+    // Zoom in
+    case 0:  return `scale(${(1.0 + eOut(t) * 0.14).toFixed(4)})`;
+    // Zoom out
+    case 1:  return `scale(${(1.14 - eOut(t) * 0.14).toFixed(4)})`;
+    // Snap-in then breathe
+    case 9:  return `scale(${(1.0 + Math.max(0, 1 - t * 7) * 0.45).toFixed(4)})`;
+    // Rapid snap-settle zoom-out
+    case 13: return `scale(${Math.max(1.0, 1.65 - eOut(Math.min(t * 4, 1)) * 0.65).toFixed(4)})`;
+    // Dramatic snap zoom-out
+    case 25: return `scale(${Math.max(1.0, 2.2 - eOut(Math.min(t * 6, 1)) * 1.2).toFixed(4)})`;
+    // Pan left
+    case 2:  return `scale(1.10) translateX(${(t * -42).toFixed(1)}px)`;
+    // Pan right
+    case 3:  return `scale(1.10) translateX(${((t - 0.5) * 66).toFixed(1)}px)`;
+    // Pan up
+    case 4:  return `scale(1.10) translateY(${(t * -40).toFixed(1)}px)`;
+    // Drift up
+    case 7:  return `scale(1.07) translateY(${(-t * 34).toFixed(1)}px)`;
+    // Drift down
+    case 8:  return `scale(1.07) translateY(${(t * 34).toFixed(1)}px)`;
+    // Slow pan up
+    case 24: return `scale(1.08) translateY(${(-t * 48).toFixed(1)}px)`;
+    // Diagonal zoom top-left
+    case 5:  return `scale(${(1.0 + t * 0.14).toFixed(4)}) translateX(${(t * -26).toFixed(1)}px) translateY(${(t * -26).toFixed(1)}px)`;
+    // Diagonal zoom bottom-right
+    case 6:  return `scale(${(1.0 + t * 0.14).toFixed(4)}) translateX(${(t * 26).toFixed(1)}px) translateY(${(t * 26).toFixed(1)}px)`;
+    // Diagonal zoom top-right
+    case 14: return `scale(${(1.0 + t * 0.14).toFixed(4)}) translateX(${(t * 26).toFixed(1)}px) translateY(${(t * -26).toFixed(1)}px)`;
+    // Diagonal zoom bottom-left
+    case 15: return `scale(${(1.0 + t * 0.14).toFixed(4)}) translateX(${(t * -26).toFixed(1)}px) translateY(${(t * 26).toFixed(1)}px)`;
+    // Zoom + gentle right drift
+    case 23: return `scale(${(1.0 + eOut(t) * 0.12).toFixed(4)}) translateX(${(t * 22).toFixed(1)}px)`;
+    // Rotate-correct left
+    case 10: return `scale(${(1.10 - eOut(t) * 0.10).toFixed(4)}) rotate(${((1 - eOut(t)) * -4).toFixed(2)}deg)`;
+    // Rotate-correct right
+    case 11: return `scale(${(1.10 - eOut(t) * 0.10).toFixed(4)}) rotate(${((1 - eOut(t)) * 4).toFixed(2)}deg)`;
+    // Wipe right then steady
+    case 12: return `scale(1.10) translateX(${(-32 + t * 62).toFixed(1)}px)`;
+    // Storm-settle left
+    case 17: return `scale(${(1.12 - eOut(t) * 0.10).toFixed(4)}) translateX(${((1 - eOut(t)) * -30).toFixed(1)}px)`;
+    // Fast snap then drift left
+    case 22: return `scale(1.08) translateX(${((1 - eOut(Math.min(t * 5, 1))) * -70).toFixed(1)}px)`;
+    // Storm-settle up
+    case 21: return `scale(${(1.12 - eOut(t) * 0.10).toFixed(4)}) translateY(${(t * 30).toFixed(1)}px)`;
+    // Breathe pulse
+    case 16: return `scale(${(1.0 + Math.sin(t * Math.PI) * 0.08).toFixed(4)})`;
+    // Wave float
+    case 20: return `scale(1.05) translateY(${(Math.sin(t * Math.PI * 2) * 18).toFixed(1)}px)`;
+    // Slow tilt-then-steady
+    case 18: return `scale(1.05) rotate(${(t * 2.0 - 1.0).toFixed(2)}deg)`;
+    // Slow tilt settle
+    case 19: return `scale(${(1.0 + t * 0.10).toFixed(4)}) rotate(${((1 - t) * 0.65).toFixed(2)}deg)`;
+    default: return `scale(${(1.0 + t * 0.08).toFixed(4)})`;
   }
 }
 
 // ─── PhotoTile ───────────────────────────────────────────────────────────────
-
 const PhotoTile: React.FC<{
   src: string;
   delay: number;
+  entryDir: "left" | "right" | "top" | "bottom";
   style?: CSSProperties;
   sceneIndex: number;
-  tileIndex?: number;
-}> = ({ src, delay, style, sceneIndex, tileIndex = 0 }) => {
+}> = ({ src, delay, entryDir, style, sceneIndex }) => {
   const frame = useCurrentFrame();
 
-  const entryDir = ENTRY_DIRS[((sceneIndex % 26) + 26) % 26];
+  const op = interpolate(frame, [delay, delay + 20], [0, 1], clamp);
 
-  const op = interpolate(frame, [delay, delay + 22], [0, 1], clamp);
+  // Entry slide — 38-frame spring settle
   const tx =
-    entryDir === "left"  ? interpolate(frame, [delay, delay + 34], [-100, 0], { ...clamp, easing: ez }) :
-    entryDir === "right" ? interpolate(frame, [delay, delay + 34], [100, 0],  { ...clamp, easing: ez }) : 0;
+    entryDir === "left"  ? interpolate(frame, [delay, delay + 28, delay + 36, delay + 42], [-90, 6, -3, 0], { ...clamp, easing: ez }) :
+    entryDir === "right" ? interpolate(frame, [delay, delay + 28, delay + 36, delay + 42], [90, -6, 3, 0],  { ...clamp, easing: ez }) : 0;
   const ty =
-    entryDir === "bottom" ? interpolate(frame, [delay, delay + 34], [100, 0],  { ...clamp, easing: ez }) :
-    entryDir === "top"    ? interpolate(frame, [delay, delay + 34], [-100, 0], { ...clamp, easing: ez }) : 0;
+    entryDir === "bottom" ? interpolate(frame, [delay, delay + 28, delay + 36, delay + 42], [80, -6, 3, 0],  { ...clamp, easing: ez }) :
+    entryDir === "top"    ? interpolate(frame, [delay, delay + 28, delay + 36, delay + 42], [-80, 6, -3, 0], { ...clamp, easing: ez }) : 0;
 
-  const ambientFrame = Math.max(0, frame - delay - 30);
+  // Ambient Ken Burns starts as soon as entry finishes
+  const ambientFrame = Math.max(0, frame - delay - 38);
   const ambientTransform = getAmbientTransform(sceneIndex, ambientFrame);
 
-  const glowOp = interpolate(frame, [delay + 30, delay + 60, delay + 140, delay + 200], [0, 0.85, 0.5, 0.65], clamp);
+  // Gold border glow pulses after entry
+  const glowOp = interpolate(
+    frame,
+    [delay + 38, delay + 70, delay + 160, delay + 240],
+    [0, 0.9, 0.55, 0.72],
+    clamp
+  );
 
   return (
     <div
       style={{
+        // Accept all flex sizing from parent; do NOT override flexShrink here
         ...style,
         opacity: op,
         transform: `translate(${tx}px, ${ty}px)`,
         overflow: "hidden",
         borderRadius: 12,
-        // Dark fill so letterbox areas from objectFit:contain blend with design
         background: "rgba(4,10,22,0.92)",
-        boxShadow: `0 14px 52px rgba(0,0,0,0.8), 0 0 0 2px ${GOLD}, 0 0 22px rgba(201,162,39,${glowOp.toFixed(2)})`,
+        boxShadow: `0 14px 52px rgba(0,0,0,0.8), 0 0 0 2px ${GOLD}, 0 0 24px rgba(201,162,39,${glowOp.toFixed(2)})`,
         position: "relative",
-        flexShrink: 0,
       }}
     >
       <Img
@@ -114,20 +149,19 @@ const PhotoTile: React.FC<{
         style={{
           width: "100%",
           height: "100%",
-          // contain = full image always visible, no cropping
-          objectFit: "contain",
+          objectFit: "contain",          // full image always visible, no cropping
           objectPosition: "center center",
-          transform: ambientTransform,
+          transform: ambientTransform,   // Ken Burns ambient animation
           transformOrigin: "center center",
           display: "block",
         }}
       />
-      {/* Inner gold inset frame */}
+      {/* Inner inset gold frame on top of image */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          boxShadow: `inset 0 0 0 2px rgba(201,162,39,0.5)`,
+          boxShadow: `inset 0 0 0 2px rgba(201,162,39,0.45)`,
           borderRadius: 10,
           pointerEvents: "none",
         }}
@@ -136,8 +170,7 @@ const PhotoTile: React.FC<{
   );
 };
 
-// ─── StatRow — 6 distinct animation types cycling by row index ───────────────
-
+// ─── StatRow — 6 distinct font animation types ───────────────────────────────
 const StatRow: React.FC<{ label: string; value?: string; delay: number; index: number }> = ({
   label,
   value,
@@ -147,39 +180,39 @@ const StatRow: React.FC<{ label: string; value?: string; delay: number; index: n
   const frame = useCurrentFrame();
   const anim = ROW_ANIMS[index % ROW_ANIMS.length];
 
-  const op = interpolate(frame, [delay, delay + 20], [0, 1], clamp);
+  const op = interpolate(frame, [delay, delay + 18], [0, 1], clamp);
 
   let tx = 0, ty = 0, sc = 1;
   switch (anim) {
     case "slideRight":
-      tx = interpolate(frame, [delay, delay + 28], [50, 0], { ...clamp, easing: ez });
+      tx = interpolate(frame, [delay, delay + 26], [52, 0], { ...clamp, easing: ez });
       break;
     case "slideLeft":
-      tx = interpolate(frame, [delay, delay + 28], [-50, 0], { ...clamp, easing: ez });
+      tx = interpolate(frame, [delay, delay + 26], [-52, 0], { ...clamp, easing: ez });
       break;
     case "slideUp":
-      ty = interpolate(frame, [delay, delay + 28], [30, 0], { ...clamp, easing: ez });
+      ty = interpolate(frame, [delay, delay + 26], [32, 0], { ...clamp, easing: ez });
       break;
     case "fadeScale":
-      sc = interpolate(frame, [delay, delay + 28], [0.78, 1.0], clamp);
+      sc = interpolate(frame, [delay, delay + 26], [0.74, 1.0], clamp);
       break;
     case "bounceRight":
-      // spring: overshoot from right then settle
       tx = interpolate(
         frame,
-        [delay, delay + 18, delay + 27, delay + 34],
-        [55, -9, 3, 0],
+        [delay, delay + 16, delay + 26, delay + 34],
+        [60, -10, 4, 0],
         clamp
       );
       break;
     case "glowUp":
-      ty = interpolate(frame, [delay, delay + 28], [22, 0], { ...clamp, easing: ez });
+      ty = interpolate(frame, [delay, delay + 26], [24, 0], { ...clamp, easing: ez });
       break;
   }
 
-  const valueGlow = anim === "glowUp"
-    ? `0 0 ${interpolate(frame, [delay + 10, delay + 50], [22, 10], clamp).toFixed(1)}px rgba(201,162,39,0.7)`
-    : "0 2px 14px rgba(201,162,39,0.4)";
+  const valueGlow =
+    anim === "glowUp"
+      ? `0 0 ${interpolate(frame, [delay + 10, delay + 55], [24, 10], clamp).toFixed(1)}px rgba(201,162,39,0.75)`
+      : "0 2px 14px rgba(201,162,39,0.45)";
 
   return (
     <div
@@ -187,7 +220,7 @@ const StatRow: React.FC<{ label: string; value?: string; delay: number; index: n
         opacity: op,
         transform: `translate(${tx}px, ${ty}px) scale(${sc})`,
         transformOrigin: "left center",
-        marginBottom: value ? 22 : 16,
+        marginBottom: value ? 20 : 14,
       }}
     >
       {value ? (
@@ -235,7 +268,6 @@ const StatRow: React.FC<{ label: string; value?: string; delay: number; index: n
 };
 
 // ─── DepartmentScene ─────────────────────────────────────────────────────────
-
 export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number }> = ({
   scene,
   sceneIndex = 0,
@@ -246,7 +278,7 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
   const content = DEPT_CONTENT[scene.page];
   const images = content?.images ?? [];
   const hasImages = images.length >= 3;
-  // Show up to 9 images; 9 gets a perfect 3×3 grid
+  // Cap at 9 — pages with 9 images get a perfect 3×3 grid
   const displayImages = images.slice(0, 9);
 
   const fadeIn = interpolate(frame, [0, fps * 0.5], [0, 1], clamp);
@@ -255,40 +287,40 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
 
   const bgScale = interpolate(frame, [0, durationInFrames], [1.0, 1.08], clamp);
 
-  // ── Title entry: 6 styles cycling per scene ──────────────────────────────
+  // ── Title entry animation — 6 types cycling per scene ─────────────────────
   const titleAnimType = ((sceneIndex % 6) + 6) % 6;
-  const titleOp = interpolate(frame, [5, fps * 0.6], [0, 1], clamp);
+  const titleOp = interpolate(frame, [4, fps * 0.55], [0, 1], clamp);
 
   let titleTx = 0, titleTy = 0, titleSc = 1;
   switch (titleAnimType) {
-    case 0: // slide from top
-      titleTy = interpolate(frame, [5, fps * 0.6], [-38, 0], { ...clamp, easing: ez });
+    case 0: // slide down from top
+      titleTy = interpolate(frame, [4, fps * 0.55], [-40, 0], { ...clamp, easing: ez });
       break;
     case 1: // slide from left
-      titleTx = interpolate(frame, [5, fps * 0.6], [-75, 0], { ...clamp, easing: ez });
+      titleTx = interpolate(frame, [4, fps * 0.55], [-80, 0], { ...clamp, easing: ez });
       break;
-    case 2: // scale in
-      titleSc = interpolate(frame, [5, fps * 0.65], [0.75, 1.0], clamp);
+    case 2: // scale-in from centre
+      titleSc = interpolate(frame, [4, fps * 0.6], [0.7, 1.0], clamp);
       break;
     case 3: // slide from right
-      titleTx = interpolate(frame, [5, fps * 0.6], [75, 0], { ...clamp, easing: ez });
+      titleTx = interpolate(frame, [4, fps * 0.55], [80, 0], { ...clamp, easing: ez });
       break;
-    case 4: // bounce from bottom
+    case 4: // bounce up from bottom
       titleTy = interpolate(
         frame,
-        [5, Math.round(fps * 0.45), Math.round(fps * 0.6), Math.round(fps * 0.72)],
-        [50, -11, 4, 0],
+        [4, Math.round(fps * 0.42), Math.round(fps * 0.56), Math.round(fps * 0.68)],
+        [55, -12, 5, 0],
         clamp
       );
       break;
-    case 5: // diagonal slide (left + up)
-      titleTx = interpolate(frame, [5, fps * 0.6], [-55, 0], { ...clamp, easing: ez });
-      titleTy = interpolate(frame, [5, fps * 0.6], [-28, 0], { ...clamp, easing: ez });
+    case 5: // diagonal (left + up)
+      titleTx = interpolate(frame, [4, fps * 0.55], [-60, 0], { ...clamp, easing: ez });
+      titleTy = interpolate(frame, [4, fps * 0.55], [-30, 0], { ...clamp, easing: ez });
       break;
   }
 
-  const barW = interpolate(frame, [fps * 0.6, fps * 0.9], [0, hasImages ? 200 : 280], { ...clamp, easing: ez });
-  const dividerH = interpolate(frame, [fps * 0.4, fps * 0.9], [0, 1], { ...clamp, easing: ez });
+  const barW = interpolate(frame, [fps * 0.55, fps * 0.85], [0, hasImages ? 200 : 290], { ...clamp, easing: ez });
+  const dividerH = interpolate(frame, [fps * 0.4, fps * 0.85], [0, 1], { ...clamp, easing: ez });
   const badgeOp = interpolate(frame, [fps * 0.8, fps * 1.2], [0, 1], clamp);
 
   const bgSrc = staticFile(`pages/page-${String(scene.page).padStart(2, "0")}.png`);
@@ -296,9 +328,57 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
   const rightLeft = hasImages ? "57%" : "5%";
   const rightWidth = hasImages ? "39%" : "90%";
 
+  // ── Build adaptive grid rows — window count = image count exactly ──────────
+  type LayoutRow = {
+    images: string[];
+    flex: number;
+    startGlobalIdx: number; // first global image index in this row
+  };
+
+  const buildRows = (): LayoutRow[] => {
+    const di = displayImages;
+    const n = di.length;
+    if (n === 3) return [
+      { images: di.slice(0, 1), flex: 2.0, startGlobalIdx: 0 },
+      { images: di.slice(1, 3), flex: 1.4, startGlobalIdx: 1 },
+    ];
+    if (n === 4) return [
+      { images: di.slice(0, 2), flex: 1, startGlobalIdx: 0 },
+      { images: di.slice(2, 4), flex: 1, startGlobalIdx: 2 },
+    ];
+    if (n === 5) return [
+      { images: di.slice(0, 1), flex: 2.0, startGlobalIdx: 0 },
+      { images: di.slice(1, 3), flex: 1.2, startGlobalIdx: 1 },
+      { images: di.slice(3, 5), flex: 1.2, startGlobalIdx: 3 },
+    ];
+    if (n === 6) return [
+      { images: di.slice(0, 3), flex: 1, startGlobalIdx: 0 },
+      { images: di.slice(3, 6), flex: 1, startGlobalIdx: 3 },
+    ];
+    if (n === 7) return [
+      { images: di.slice(0, 1), flex: 1.8, startGlobalIdx: 0 },
+      { images: di.slice(1, 4), flex: 1.1, startGlobalIdx: 1 },
+      { images: di.slice(4, 7), flex: 1.1, startGlobalIdx: 4 },
+    ];
+    if (n === 8) return [
+      { images: di.slice(0, 2), flex: 1.1, startGlobalIdx: 0 },
+      { images: di.slice(2, 5), flex: 1.0, startGlobalIdx: 2 },
+      { images: di.slice(5, 8), flex: 1.0, startGlobalIdx: 5 },
+    ];
+    // 9 → perfect 3×3
+    return [
+      { images: di.slice(0, 3), flex: 1, startGlobalIdx: 0 },
+      { images: di.slice(3, 6), flex: 1, startGlobalIdx: 3 },
+      { images: di.slice(6, 9), flex: 1, startGlobalIdx: 6 },
+    ];
+  };
+
+  // Stagger delay per image: 12 frames between each
+  const imgDelay = (globalIdx: number) => 8 + globalIdx * 14;
+
   return (
     <AbsoluteFill style={{ background: NAVY, overflow: "hidden", opacity }}>
-      {/* Blurred background */}
+      {/* ── Blurred page background ── */}
       <div
         style={{
           position: "absolute",
@@ -318,52 +398,10 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
         }}
       />
 
-      {/* ── PHOTO PANEL (left 55%) — adaptive grid per image count ── */}
+      {/* ── PHOTO PANEL ── */}
       {hasImages && (() => {
-        const di = displayImages;
-        const n = di.length;
+        const rows = buildRows();
         const gap = 8;
-        const delays = [6, 18, 30, 42, 54, 66, 78, 90, 102];
-
-        // Build rows depending on count:
-        //  3 → [top] + [2]              featured top, 2-wide row
-        //  4 → [2] + [2]               clean 2×2 grid
-        //  5 → [top] + [2] + [2]       featured + two 2-wide rows
-        //  6 → [3] + [3]               clean 2×3 grid
-        //  7 → [top] + [3] + [3]       featured + two 3-wide rows
-        //  8 → [2] + [3] + [3]         2 on top + 3+3 below
-        //  9 → [3] + [3] + [3]         perfect 3×3 grid
-        type LayoutRow = { images: string[]; flex: number; startIdx: number };
-        const rows: LayoutRow[] = [];
-
-        if (n === 3) {
-          rows.push({ images: di.slice(0, 1), flex: 2.0, startIdx: 0 });
-          rows.push({ images: di.slice(1, 3), flex: 1.4, startIdx: 1 });
-        } else if (n === 4) {
-          rows.push({ images: di.slice(0, 2), flex: 1, startIdx: 0 });
-          rows.push({ images: di.slice(2, 4), flex: 1, startIdx: 2 });
-        } else if (n === 5) {
-          rows.push({ images: di.slice(0, 1), flex: 2.0, startIdx: 0 });
-          rows.push({ images: di.slice(1, 3), flex: 1.2, startIdx: 1 });
-          rows.push({ images: di.slice(3, 5), flex: 1.2, startIdx: 3 });
-        } else if (n === 6) {
-          rows.push({ images: di.slice(0, 3), flex: 1, startIdx: 0 });
-          rows.push({ images: di.slice(3, 6), flex: 1, startIdx: 3 });
-        } else if (n === 7) {
-          rows.push({ images: di.slice(0, 1), flex: 1.8, startIdx: 0 });
-          rows.push({ images: di.slice(1, 4), flex: 1.1, startIdx: 1 });
-          rows.push({ images: di.slice(4, 7), flex: 1.1, startIdx: 4 });
-        } else if (n === 8) {
-          rows.push({ images: di.slice(0, 2), flex: 1.1, startIdx: 0 });
-          rows.push({ images: di.slice(2, 5), flex: 1, startIdx: 2 });
-          rows.push({ images: di.slice(5, 8), flex: 1, startIdx: 5 });
-        } else {
-          // 9 → 3×3
-          rows.push({ images: di.slice(0, 3), flex: 1, startIdx: 0 });
-          rows.push({ images: di.slice(3, 6), flex: 1, startIdx: 3 });
-          rows.push({ images: di.slice(6, 9), flex: 1, startIdx: 6 });
-        }
-
         return (
           <div
             style={{
@@ -380,24 +418,40 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
             }}
           >
             {rows.map((row, rowIdx) => (
-              <div key={rowIdx} style={{ display: "flex", gap, flex: row.flex, minHeight: 0 }}>
-                {row.images.map((src, colIdx) => (
-                  <PhotoTile
-                    key={src}
-                    src={src}
-                    delay={delays[row.startIdx + colIdx] ?? 8}
-                    sceneIndex={sceneIndex}
-                    tileIndex={row.startIdx + colIdx}
-                    style={{ flex: 1, minWidth: 0, minHeight: 0 }}
-                  />
-                ))}
+              <div
+                key={rowIdx}
+                style={{
+                  display: "flex",
+                  gap,
+                  flex: row.flex,
+                  minHeight: 0,
+                }}
+              >
+                {row.images.map((src, colIdx) => {
+                  const globalIdx = row.startGlobalIdx + colIdx;
+                  const dir = getTileEntryDir(colIdx, row.images.length, rowIdx);
+                  return (
+                    <PhotoTile
+                      key={src}
+                      src={src}
+                      delay={imgDelay(globalIdx)}
+                      entryDir={dir}
+                      sceneIndex={sceneIndex}
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        minHeight: 0,
+                      }}
+                    />
+                  );
+                })}
               </div>
             ))}
           </div>
         );
       })()}
 
-      {/* ── GOLD DIVIDER ── */}
+      {/* ── Gold vertical divider ── */}
       {hasImages && (
         <div
           style={{
@@ -411,7 +465,7 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
         />
       )}
 
-      {/* ── TEXT PANEL (right) ── */}
+      {/* ── TEXT PANEL ── */}
       <div
         style={{
           position: "absolute",
@@ -426,20 +480,20 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
           paddingLeft: hasImages ? 26 : 80,
         }}
       >
-        {/* Title with per-scene entry animation */}
+        {/* Title block — animated entry */}
         <div
           style={{
             opacity: titleOp,
             transform: `translate(${titleTx}px, ${titleTy}px) scale(${titleSc})`,
             transformOrigin: "left center",
-            marginBottom: 24,
+            marginBottom: 22,
           }}
         >
           <div
             style={{
               color: GOLD,
-              fontSize: 14,
-              letterSpacing: 3,
+              fontSize: 13,
+              letterSpacing: 3.5,
               fontFamily: "'Noto Sans Telugu', sans-serif",
               marginBottom: 7,
               textTransform: "uppercase",
@@ -459,24 +513,33 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
           >
             {content?.titleTelugu ?? ""}
           </div>
-          <div style={{ width: barW, height: 3, background: GOLD, marginTop: 12, borderRadius: 2 }} />
+          {/* Animated gold underbar */}
+          <div
+            style={{
+              width: barW,
+              height: 3,
+              background: `linear-gradient(to right, ${GOLD}, rgba(201,162,39,0.3))`,
+              marginTop: 12,
+              borderRadius: 2,
+            }}
+          />
         </div>
 
-        {/* Highlights — each row gets a different animation */}
+        {/* Highlights — each row uses a different font animation */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {content?.highlights.map((h, i) => (
             <StatRow
               key={i}
               label={h.label}
               value={h.value}
-              delay={fps * 0.7 + i * 14}
+              delay={fps * 0.65 + i * 15}
               index={i}
             />
           ))}
         </div>
       </div>
 
-      {/* Footer badge */}
+      {/* ── Footer badge ── */}
       <div
         style={{
           position: "absolute",
