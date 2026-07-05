@@ -3,7 +3,7 @@ import { Intro } from "./Intro";
 import { DepartmentScene } from "./DepartmentScene";
 import { SummaryScene } from "./SummaryScene";
 import { Ending } from "./Ending";
-import { TransitionOverlay } from "./Transition";
+import { TransitionOverlay, type TransitionType } from "./Transition";
 import {
   DEPT_SCENES,
   FPS,
@@ -17,8 +17,16 @@ const TOC_FRAMES     =  5 * FPS;  // 150
 const SUMMARY_FRAMES = SUMMARY_DURATION_SEC * FPS;  // 450
 const ENDING_FRAMES  = ENDING_DURATION_SEC  * FPS;  // 600
 
-// Transition types cycle through 4 styles
-const TRANSITION_TYPES = ["dark-dip", "fade", "gold-flash", "fade"] as const;
+// 7 unique transition types — cycle so no two adjacent scenes share the same effect
+const TRANSITION_TYPES: TransitionType[] = [
+  "dark-dip",
+  "wipe-right",
+  "gold-flash",
+  "fade",
+  "wipe-left",
+  "zoom-out",
+  "white-flash",
+];
 
 export const MainVideo: React.FC = () => {
   // Build cumulative start times
@@ -61,7 +69,10 @@ export const MainVideo: React.FC = () => {
 
       {/* ── TOC page ── */}
       <Sequence from={tocStart} durationInFrames={TOC_FRAMES}>
-        <DepartmentScene scene={{ page: 2, dept: "విషయ సూచిక", animation: "fadeZoomClassic", durationSec: 5 }} />
+        <DepartmentScene
+          scene={{ page: 2, dept: "విషయ సూచిక", animation: "fadeZoomClassic", durationSec: 5 }}
+          sceneIndex={-1}
+        />
       </Sequence>
 
       {/* ── Department scenes ── */}
@@ -72,7 +83,7 @@ export const MainVideo: React.FC = () => {
         return (
           <Sequence key={scene.page} from={from} durationInFrames={dur}>
             <AbsoluteFill>
-              <DepartmentScene scene={scene} />
+              <DepartmentScene scene={scene} sceneIndex={i} />
               {/* Transition overlay at end of scene (except last dept) */}
               {i < DEPT_SCENES.length - 1 && (
                 <Sequence from={dur - TRANSITION_FRAMES} durationInFrames={TRANSITION_FRAMES}>
