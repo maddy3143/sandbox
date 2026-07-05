@@ -246,8 +246,8 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
   const content = DEPT_CONTENT[scene.page];
   const images = content?.images ?? [];
   const hasImages = images.length >= 3;
-  // Cap at 7 images to avoid overcrowding; show as many as available up to that
-  const displayImages = images.slice(0, 7);
+  // Show up to 9 images; 9 gets a perfect 3×3 grid
+  const displayImages = images.slice(0, 9);
 
   const fadeIn = interpolate(frame, [0, fps * 0.5], [0, 1], clamp);
   const fadeOut = interpolate(frame, [durationInFrames - fps * 0.6, durationInFrames], [1, 0], clamp);
@@ -318,28 +318,51 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
         }}
       />
 
-      {/* ── PHOTO PANEL (left 55%) ── */}
+      {/* ── PHOTO PANEL (left 55%) — adaptive grid per image count ── */}
       {hasImages && (() => {
         const di = displayImages;
         const n = di.length;
-        // Adaptive layout based on image count:
-        //   3       → 1 tall top  +  row of 2
-        //   4       → 1 tall top  +  row of 3
-        //   5       → 1 top       +  row of 2  +  row of 2
-        //   6       → 1 top       +  row of 3  +  row of 2
-        //   7       → 1 top       +  row of 3  +  row of 3
-        const topH = n <= 4 ? 360 : 280;
-        const delays = [8, 22, 36, 50, 64, 78, 92];
+        const gap = 8;
+        const delays = [6, 18, 30, 42, 54, 66, 78, 90, 102];
 
-        // Slices for each row
-        const row1 = n === 3 ? di.slice(1, 3) :
-                     n === 4 ? di.slice(1, 4) :
-                     n === 5 ? di.slice(1, 3) :
-                     n === 6 ? di.slice(1, 4) :
-                               di.slice(1, 4); // 7
-        const row2 = n === 5 ? di.slice(3, 5) :
-                     n === 6 ? di.slice(4, 6) :
-                     n === 7 ? di.slice(4, 7) : [];
+        // Build rows depending on count:
+        //  3 → [top] + [2]              featured top, 2-wide row
+        //  4 → [2] + [2]               clean 2×2 grid
+        //  5 → [top] + [2] + [2]       featured + two 2-wide rows
+        //  6 → [3] + [3]               clean 2×3 grid
+        //  7 → [top] + [3] + [3]       featured + two 3-wide rows
+        //  8 → [2] + [3] + [3]         2 on top + 3+3 below
+        //  9 → [3] + [3] + [3]         perfect 3×3 grid
+        type LayoutRow = { images: string[]; flex: number; startIdx: number };
+        const rows: LayoutRow[] = [];
+
+        if (n === 3) {
+          rows.push({ images: di.slice(0, 1), flex: 2.0, startIdx: 0 });
+          rows.push({ images: di.slice(1, 3), flex: 1.4, startIdx: 1 });
+        } else if (n === 4) {
+          rows.push({ images: di.slice(0, 2), flex: 1, startIdx: 0 });
+          rows.push({ images: di.slice(2, 4), flex: 1, startIdx: 2 });
+        } else if (n === 5) {
+          rows.push({ images: di.slice(0, 1), flex: 2.0, startIdx: 0 });
+          rows.push({ images: di.slice(1, 3), flex: 1.2, startIdx: 1 });
+          rows.push({ images: di.slice(3, 5), flex: 1.2, startIdx: 3 });
+        } else if (n === 6) {
+          rows.push({ images: di.slice(0, 3), flex: 1, startIdx: 0 });
+          rows.push({ images: di.slice(3, 6), flex: 1, startIdx: 3 });
+        } else if (n === 7) {
+          rows.push({ images: di.slice(0, 1), flex: 1.8, startIdx: 0 });
+          rows.push({ images: di.slice(1, 4), flex: 1.1, startIdx: 1 });
+          rows.push({ images: di.slice(4, 7), flex: 1.1, startIdx: 4 });
+        } else if (n === 8) {
+          rows.push({ images: di.slice(0, 2), flex: 1.1, startIdx: 0 });
+          rows.push({ images: di.slice(2, 5), flex: 1, startIdx: 2 });
+          rows.push({ images: di.slice(5, 8), flex: 1, startIdx: 5 });
+        } else {
+          // 9 → 3×3
+          rows.push({ images: di.slice(0, 3), flex: 1, startIdx: 0 });
+          rows.push({ images: di.slice(3, 6), flex: 1, startIdx: 3 });
+          rows.push({ images: di.slice(6, 9), flex: 1, startIdx: 6 });
+        }
 
         return (
           <div
@@ -352,37 +375,24 @@ export const DepartmentScene: React.FC<{ scene: SceneConfig; sceneIndex?: number
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              gap: 10,
-              padding: "44px 14px 44px 0",
+              gap,
+              padding: `44px ${gap}px 44px 0`,
             }}
           >
-            {/* Top image — full width */}
-            <PhotoTile
-              src={di[0]} delay={delays[0]} sceneIndex={sceneIndex} tileIndex={0}
-              style={{ height: topH, width: "100%", flexShrink: 0 }}
-            />
-            {/* Row 1 */}
-            <div style={{ display: "flex", gap: 10, flex: 1 }}>
-              {row1.map((src, idx) => (
-                <PhotoTile
-                  key={src} src={src} delay={delays[1 + idx]}
-                  sceneIndex={sceneIndex} tileIndex={1 + idx}
-                  style={{ flex: 1 }}
-                />
-              ))}
-            </div>
-            {/* Row 2 (only when 5+ images) */}
-            {row2.length > 0 && (
-              <div style={{ display: "flex", gap: 10, flex: 1 }}>
-                {row2.map((src, idx) => (
+            {rows.map((row, rowIdx) => (
+              <div key={rowIdx} style={{ display: "flex", gap, flex: row.flex, minHeight: 0 }}>
+                {row.images.map((src, colIdx) => (
                   <PhotoTile
-                    key={src} src={src} delay={delays[1 + row1.length + idx]}
-                    sceneIndex={sceneIndex} tileIndex={1 + row1.length + idx}
-                    style={{ flex: 1 }}
+                    key={src}
+                    src={src}
+                    delay={delays[row.startIdx + colIdx] ?? 8}
+                    sceneIndex={sceneIndex}
+                    tileIndex={row.startIdx + colIdx}
+                    style={{ flex: 1, minWidth: 0, minHeight: 0 }}
                   />
                 ))}
               </div>
-            )}
+            ))}
           </div>
         );
       })()}

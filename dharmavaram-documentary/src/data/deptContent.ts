@@ -23,8 +23,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-03/img-04.jpeg",
       "dept-images/page-03/img-05.jpeg",
       "dept-images/page-03/img-06.jpeg",
-      "dept-images/page-03/img-07.jpeg",
-      "dept-images/page-03/img-08.jpeg",
     ],
   },
   4: {
@@ -41,8 +39,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-04/img-01.jpeg",
       "dept-images/page-04/img-02.jpeg",
       "dept-images/page-04/img-03.jpeg",
-      "dept-images/page-04/img-04.jpeg",
-      "dept-images/page-04/img-05.jpeg",
     ],
   },
   5: {
@@ -62,8 +58,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-05/img-04.jpeg",
       "dept-images/page-05/img-05.jpeg",
       "dept-images/page-05/img-06.jpeg",
-      "dept-images/page-05/img-07.jpeg",
-      "dept-images/page-05/img-08.jpeg",
     ],
   },
   6: {
@@ -83,8 +77,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-06/img-04.jpeg",
       "dept-images/page-06/img-05.jpeg",
       "dept-images/page-06/img-06.jpeg",
-      "dept-images/page-06/img-07.jpeg",
-      "dept-images/page-06/img-08.jpeg",
     ],
   },
   7: {
@@ -107,8 +99,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-07/img-07.jpeg",
       "dept-images/page-07/img-08.jpeg",
       "dept-images/page-07/img-09.jpeg",
-      "dept-images/page-07/img-10.jpeg",
-      "dept-images/page-07/img-11.jpeg",
     ],
   },
   8: {
@@ -128,8 +118,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-08/img-04.jpeg",
       "dept-images/page-08/img-05.jpeg",
       "dept-images/page-08/img-06.jpeg",
-      "dept-images/page-08/img-07.jpeg",
-      "dept-images/page-08/img-08.jpeg",
     ],
   },
   9: {
@@ -150,8 +138,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-09/img-05.jpeg",
       "dept-images/page-09/img-06.jpeg",
       "dept-images/page-09/img-07.jpeg",
-      "dept-images/page-09/img-08.jpeg",
-      "dept-images/page-09/img-09.jpeg",
     ],
   },
   10: {
@@ -170,8 +156,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-10/img-03.jpeg",
       "dept-images/page-10/img-04.jpeg",
       "dept-images/page-10/img-05.jpeg",
-      "dept-images/page-10/img-06.jpeg",
-      "dept-images/page-10/img-07.jpeg",
     ],
   },
   11: {
@@ -187,8 +171,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
     images: [
       "dept-images/page-11/img-01.jpeg",
       "dept-images/page-11/img-02.jpeg",
-      "dept-images/page-11/img-03.jpeg",
-      "dept-images/page-11/img-04.jpeg",
     ],
   },
   12: {
@@ -206,8 +188,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-12/img-02.jpeg",
       "dept-images/page-12/img-03.jpeg",
       "dept-images/page-12/img-04.jpeg",
-      "dept-images/page-12/img-05.jpeg",
-      "dept-images/page-12/img-06.jpeg",
     ],
   },
   13: {
@@ -227,8 +207,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-13/img-04.jpeg",
       "dept-images/page-13/img-05.jpeg",
       "dept-images/page-13/img-06.jpeg",
-      "dept-images/page-13/img-07.jpeg",
-      "dept-images/page-13/img-08.jpeg",
     ],
   },
   14: {
@@ -246,8 +224,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-14/img-02.jpeg",
       "dept-images/page-14/img-03.jpeg",
       "dept-images/page-14/img-04.jpeg",
-      "dept-images/page-14/img-05.jpeg",
-      "dept-images/page-14/img-06.jpeg",
     ],
   },
   15: {
@@ -267,8 +243,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-15/img-04.jpeg",
       "dept-images/page-15/img-05.jpeg",
       "dept-images/page-15/img-06.jpeg",
-      "dept-images/page-15/img-07.jpeg",
-      "dept-images/page-15/img-08.jpeg",
     ],
   },
   16: {
@@ -288,8 +262,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-16/img-04.jpeg",
       "dept-images/page-16/img-05.jpeg",
       "dept-images/page-16/img-06.jpeg",
-      "dept-images/page-16/img-07.jpeg",
-      "dept-images/page-16/img-08.jpeg",
     ],
   },
   17: {
@@ -309,8 +281,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-17/img-04.jpeg",
       "dept-images/page-17/img-05.jpeg",
       "dept-images/page-17/img-06.jpeg",
-      "dept-images/page-17/img-07.jpeg",
-      "dept-images/page-17/img-08.jpeg",
     ],
   },
   18: {
@@ -330,8 +300,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-18/img-04.jpeg",
       "dept-images/page-18/img-05.jpeg",
       "dept-images/page-18/img-06.jpeg",
-      "dept-images/page-18/img-07.jpeg",
-      "dept-images/page-18/img-08.jpeg",
     ],
   },
   19: {
@@ -351,8 +319,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-19/img-04.jpeg",
       "dept-images/page-19/img-05.jpeg",
       "dept-images/page-19/img-06.jpeg",
-      "dept-images/page-19/img-07.jpeg",
-      "dept-images/page-19/img-08.jpeg",
     ],
   },
   20: {
@@ -370,8 +336,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-20/img-02.jpeg",
       "dept-images/page-20/img-03.jpeg",
       "dept-images/page-20/img-04.jpeg",
-      "dept-images/page-20/img-05.jpeg",
-      "dept-images/page-20/img-06.jpeg",
     ],
   },
   21: {
@@ -388,8 +352,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-21/img-01.jpeg",
       "dept-images/page-21/img-02.jpeg",
       "dept-images/page-21/img-03.jpeg",
-      "dept-images/page-21/img-04.jpeg",
-      "dept-images/page-21/img-05.jpeg",
     ],
   },
   22: {
@@ -412,8 +374,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-22/img-07.jpeg",
       "dept-images/page-22/img-08.jpeg",
       "dept-images/page-22/img-09.jpeg",
-      "dept-images/page-22/img-10.jpeg",
-      "dept-images/page-22/img-11.jpeg",
     ],
   },
   23: {
@@ -429,7 +389,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
     images: [
       "dept-images/page-23/img-01.jpeg",
       "dept-images/page-23/img-02.jpeg",
-      "dept-images/page-23/img-03.jpeg",
     ],
   },
   24: {
@@ -452,8 +411,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-24/img-07.jpeg",
       "dept-images/page-24/img-08.jpeg",
       "dept-images/page-24/img-09.jpeg",
-      "dept-images/page-24/img-10.jpeg",
-      "dept-images/page-24/img-11.jpeg",
     ],
   },
   25: {
@@ -473,8 +430,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-25/img-04.jpeg",
       "dept-images/page-25/img-05.jpeg",
       "dept-images/page-25/img-06.jpeg",
-      "dept-images/page-25/img-07.jpeg",
-      "dept-images/page-25/img-08.jpeg",
     ],
   },
   26: {
@@ -494,8 +449,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-26/img-04.jpeg",
       "dept-images/page-26/img-05.jpeg",
       "dept-images/page-26/img-06.jpeg",
-      "dept-images/page-26/img-07.jpeg",
-      "dept-images/page-26/img-08.jpeg",
     ],
   },
   27: {
@@ -512,8 +465,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-27/img-01.jpeg",
       "dept-images/page-27/img-02.jpeg",
       "dept-images/page-27/img-03.jpeg",
-      "dept-images/page-27/img-04.jpeg",
-      "dept-images/page-27/img-05.jpeg",
     ],
   },
   28: {
@@ -533,8 +484,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       "dept-images/page-28/img-04.jpeg",
       "dept-images/page-28/img-05.jpeg",
       "dept-images/page-28/img-06.jpeg",
-      "dept-images/page-28/img-07.jpeg",
-      "dept-images/page-28/img-08.jpeg",
     ],
   },
 };
