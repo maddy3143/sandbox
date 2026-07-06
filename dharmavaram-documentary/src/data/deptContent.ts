@@ -127,7 +127,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       { label: "నేత కార్మికులకు రుణాలు (2025-26)", value: "₹290.40 లక్షలు" },
     ],
     images: [
-      "dept-images/page-09/img-01.jpeg",
       "dept-images/page-09/img-02.jpeg",
       "dept-images/page-09/img-03.jpeg",
       "dept-images/page-09/img-04.jpeg",
@@ -205,7 +204,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       { label: "అక్షర ఆంధ్ర శిక్షార్థులు", value: "7,885 మంది" },
     ],
     images: [
-      "dept-images/page-14/img-01.jpeg",
       "dept-images/page-14/img-02.jpeg",
       "dept-images/page-14/img-03.jpeg",
       "dept-images/page-14/img-04.jpeg",
@@ -317,7 +315,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       { label: "DMF నిధులతో అభివృద్ధి", value: "రూ. 37.35 లక్షలు" },
     ],
     images: [
-      "dept-images/page-20/img-01.jpeg",
       "dept-images/page-20/img-02.jpeg",
       "dept-images/page-20/img-03.jpeg",
       "dept-images/page-20/img-04.jpeg",
