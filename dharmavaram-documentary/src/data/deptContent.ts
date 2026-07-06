@@ -91,10 +91,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
     ],
     images: [
       "dept-images/page-07/img-01.jpeg",
-      "dept-images/page-07/img-02.jpeg",
-      "dept-images/page-07/img-03.jpeg",
-      "dept-images/page-07/img-04.jpeg",
-      "dept-images/page-07/img-05.jpeg",
       "dept-images/page-07/img-06.jpeg",
       "dept-images/page-07/img-07.jpeg",
       "dept-images/page-07/img-08.jpeg",
@@ -151,9 +147,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       { label: "జలధార్ 100 రోజుల కార్యక్రమం", value: "అడవుల శుభ్రపరచడం" },
     ],
     images: [
-      "dept-images/page-10/img-01.jpeg",
-      "dept-images/page-10/img-02.jpeg",
-      "dept-images/page-10/img-03.jpeg",
       "dept-images/page-10/img-04.jpeg",
       "dept-images/page-10/img-05.jpeg",
     ],
@@ -183,12 +176,7 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       { label: "భూగర్భ జల సంరక్షణ", value: "పునర్ నింపడం చర్యలు" },
       { label: "పర్యావరణ అనుమతులు", value: "నిబంధనలకు అనుగుణంగా" },
     ],
-    images: [
-      "dept-images/page-12/img-01.jpeg",
-      "dept-images/page-12/img-02.jpeg",
-      "dept-images/page-12/img-03.jpeg",
-      "dept-images/page-12/img-04.jpeg",
-    ],
+    images: [],
   },
   13: {
     titleTelugu: "DRDA – జిల్లా గ్రామీణాభివృద్ధి సంస్థ",
@@ -201,9 +189,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
       { label: "సంక్షేమ పథకాలు", value: "ప్రతి కుటుంబానికి చేరికలో" },
     ],
     images: [
-      "dept-images/page-13/img-01.jpeg",
-      "dept-images/page-13/img-02.jpeg",
-      "dept-images/page-13/img-03.jpeg",
       "dept-images/page-13/img-04.jpeg",
       "dept-images/page-13/img-05.jpeg",
       "dept-images/page-13/img-06.jpeg",
@@ -366,10 +351,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
     ],
     images: [
       "dept-images/page-22/img-01.jpeg",
-      "dept-images/page-22/img-02.jpeg",
-      "dept-images/page-22/img-03.jpeg",
-      "dept-images/page-22/img-04.jpeg",
-      "dept-images/page-22/img-05.jpeg",
       "dept-images/page-22/img-06.jpeg",
       "dept-images/page-22/img-07.jpeg",
       "dept-images/page-22/img-08.jpeg",
@@ -388,7 +369,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
     ],
     images: [
       "dept-images/page-23/img-01.jpeg",
-      "dept-images/page-23/img-02.jpeg",
     ],
   },
   24: {
@@ -403,10 +383,6 @@ export const DEPT_CONTENT: Record<number, DeptContent> = {
     ],
     images: [
       "dept-images/page-24/img-01.jpeg",
-      "dept-images/page-24/img-02.jpeg",
-      "dept-images/page-24/img-03.jpeg",
-      "dept-images/page-24/img-04.jpeg",
-      "dept-images/page-24/img-05.jpeg",
       "dept-images/page-24/img-06.jpeg",
       "dept-images/page-24/img-07.jpeg",
       "dept-images/page-24/img-08.jpeg",
